@@ -40,7 +40,7 @@ export const authMiddleware = createMiddleware<{ Bindings: Bindings }>(async (c,
   }
 
   // Set user info in context
-  c.set('user', { ...payload, id: payload.userId });
+  c.set('user', { ...payload, id: payload.userId, ...user });
   c.set('userId', payload.userId);
   
   await next();

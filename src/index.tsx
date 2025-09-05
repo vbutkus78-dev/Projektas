@@ -9,6 +9,7 @@ import requests from './routes/requests';
 import orders from './routes/orders';
 import files from './routes/files';
 import invoices from './routes/invoices';
+import reports from './routes/reports';
 
 import type { Bindings } from './types';
 
@@ -31,6 +32,7 @@ app.route('/api/v1/requests', requests);
 app.route('/api/v1/orders', orders);
 app.route('/api/v1/files', files);
 app.route('/api/v1/invoices', invoices);
+app.route('/api/v1/reports', reports);
 
 // Health check
 app.get('/api/health', (c) => {
@@ -52,6 +54,7 @@ app.get('/api/v1', (c) => {
       orders: '/api/v1/orders',
       invoices: '/api/v1/invoices',
       files: '/api/v1/files',
+      reports: '/api/v1/reports',
       health: '/api/health'
     }
   });

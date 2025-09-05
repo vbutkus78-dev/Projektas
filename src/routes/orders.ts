@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { authMiddleware, managerPlus } from '../middleware/auth';
 import { getOrderWithDetails, logAudit, createNotification } from '../utils/db';
+import { createEmailService } from '../utils/email';
 import type { Bindings, PaginationResult, OrderWithDetails } from '../types';
 
 const orders = new Hono<{ Bindings: Bindings }>();
@@ -244,17 +245,35 @@ orders.put('/:id', authMiddleware, managerPlus, async (c) => {
       body
     );
 
-    // If order was sent to supplier, notify requester
-    if (body.status === 'sent') {
+    // Notify requester about order status changes
+    if (body.status && body.status !== currentOrder.status) {
       await createNotification(
         c.env.DB,
         currentOrder.request?.requester_id!,
-        'order_sent',
-        'Užsakymas išsiųstas tiekėjui',
-        `Jūsų prašymo užsakymas ${currentOrder.po_number} buvo išsiųstas tiekėjui`,
+        'order_status_change',
+        'Užsakymo būsena pasikeitė',
+        `Jūsų užsakymo ${currentOrder.po_number} būsena pasikeitė į ${body.status}`,
         'order',
         id
       );
+      
+      // Send email notification
+      const emailService = createEmailService(c.env);
+      if (emailService && currentOrder.request?.requester_email) {
+        const appUrl = c.env.APP_URL || 'https://your-app.pages.dev';
+        try {
+          await emailService.sendOrderStatusNotification(
+            currentOrder.request.requester_email,
+            currentOrder.request.requester_name,
+            id,
+            body.status,
+            body.notes,
+            appUrl
+          );
+        } catch (error) {
+          console.error('Failed to send order status email:', error);
+        }
+      }
     }
 
     const updatedOrder = await getOrderWithDetails(c.env.DB, id);

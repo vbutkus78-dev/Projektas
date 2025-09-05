@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { authMiddleware, requireRole } from '../middleware/auth';
 import { getOrderWithDetails, logAudit, createNotification } from '../utils/db';
+import { createEmailService } from '../utils/email';
 import type { Bindings, InvoiceType } from '../types';
 
 const invoices = new Hono<{ Bindings: Bindings }>();
@@ -440,7 +441,8 @@ invoices.patch('/:id', authMiddleware, requireRole(['accounting', 'admin']), asy
 
       // Notify requester about completion
       const request = await c.env.DB.prepare(`
-        SELECT requester_id FROM requests WHERE id = ?
+        SELECT requester_id, r.requester_email, r.requester_name 
+        FROM requests r WHERE id = ?
       `).bind(currentInvoice.request_id).first();
 
       if (request) {
@@ -453,6 +455,24 @@ invoices.patch('/:id', authMiddleware, requireRole(['accounting', 'admin']), asy
           'order',
           currentInvoice.order_id
         );
+        
+        // Send email notification
+        const emailService = createEmailService(c.env);
+        if (emailService && request.requester_email) {
+          const appUrl = c.env.APP_URL || 'https://your-app.pages.dev';
+          try {
+            await emailService.sendInvoicePaymentNotification(
+              request.requester_email as string,
+              request.requester_name as string,
+              currentInvoice.invoice_number,
+              currentInvoice.amount,
+              'payment_received',
+              appUrl
+            );
+          } catch (error) {
+            console.error('Failed to send payment notification email:', error);
+          }
+        }
       }
     }
 

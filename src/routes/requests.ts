@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { authMiddleware, managerPlus } from '../middleware/auth';
 import { getRequestWithDetails, logAudit, createNotification, updateRequestTotal } from '../utils/db';
 import { canAccessRequest } from '../utils/auth';
+import { createEmailService } from '../utils/email';
 import type { 
   Bindings, 
   CreateRequestRequest, 
@@ -312,7 +313,7 @@ requests.post('/:id/submit', authMiddleware, async (c) => {
     );
 
     // Create notifications for managers
-    const managers = await c.env.DB.prepare("SELECT id FROM users WHERE role = 'manager' AND active = 1").all();
+    const managers = await c.env.DB.prepare("SELECT id, email, name FROM users WHERE role = 'manager' AND active = 1").all();
     
     for (const manager of managers.results) {
       await createNotification(
@@ -324,6 +325,26 @@ requests.post('/:id/submit', authMiddleware, async (c) => {
         'request',
         id
       );
+    }
+    
+    // Send email notifications to managers
+    const emailService = createEmailService(c.env);
+    if (emailService) {
+      const appUrl = c.env.APP_URL || 'https://your-app.pages.dev';
+      for (const manager of managers.results) {
+        try {
+          await emailService.sendRequestStatusNotification(
+            manager.email as string,
+            manager.name as string,
+            id,
+            'submitted',
+            `Darbuotojas ${user.name} pateikė naują prašymą peržiūrai.`,
+            appUrl
+          );
+        } catch (error) {
+          console.error('Failed to send email to manager:', error);
+        }
+      }
     }
 
     const updatedRequest = await getRequestWithDetails(c.env.DB, id);
@@ -442,7 +463,7 @@ requests.post('/:id/approve', authMiddleware, managerPlus, async (c) => {
     // Create notifications
     if (body.decision === 'approved' && stage === 'manager_review') {
       // Notify supervisors
-      const supervisors = await c.env.DB.prepare("SELECT id FROM users WHERE role IN ('supervisor', 'admin') AND active = 1").all();
+      const supervisors = await c.env.DB.prepare("SELECT id, email, name FROM users WHERE role IN ('supervisor', 'admin') AND active = 1").all();
       for (const supervisor of supervisors.results) {
         await createNotification(
           c.env.DB,
@@ -453,6 +474,26 @@ requests.post('/:id/approve', authMiddleware, managerPlus, async (c) => {
           'request',
           id
         );
+      }
+      
+      // Send email notifications to supervisors
+      const emailService = createEmailService(c.env);
+      if (emailService) {
+        const appUrl = c.env.APP_URL || 'https://your-app.pages.dev';
+        for (const supervisor of supervisors.results) {
+          try {
+            await emailService.sendRequestStatusNotification(
+              supervisor.email as string,
+              supervisor.name as string,
+              id,
+              'pending_approval',
+              `Vadybininkas ${user.name} rekomendavo patvirtinti šį prašymą.`,
+              appUrl
+            );
+          } catch (error) {
+            console.error('Failed to send email to supervisor:', error);
+          }
+        }
       }
     } else {
       // Notify requester
@@ -465,6 +506,24 @@ requests.post('/:id/approve', authMiddleware, managerPlus, async (c) => {
         'request',
         id
       );
+      
+      // Send email notification to requester
+      const emailService = createEmailService(c.env);
+      if (emailService) {
+        const appUrl = c.env.APP_URL || 'https://your-app.pages.dev';
+        try {
+          await emailService.sendRequestStatusNotification(
+            request.requester_email,
+            request.requester_name,
+            id,
+            newStatus,
+            body.comment,
+            appUrl
+          );
+        } catch (error) {
+          console.error('Failed to send email to requester:', error);
+        }
+      }
     }
 
     const updatedRequest = await getRequestWithDetails(c.env.DB, id);

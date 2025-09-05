@@ -157,6 +157,11 @@ class OrderApp {
                                         🧾 Sąskaitos
                                     </button>
                                     ` : ''}
+                                    ${(this.currentUser.role === 'manager' || this.currentUser.role === 'supervisor' || this.currentUser.role === 'accounting' || this.currentUser.role === 'admin') ? `
+                                    <button onclick="app.showReports()" class="nav-link border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                        📊 Ataskaitos
+                                    </button>
+                                    ` : ''}
                                 </div>
                             </div>
                             <div class="hidden sm:ml-6 sm:flex sm:items-center">
@@ -1503,6 +1508,282 @@ class OrderApp {
     async showCreateInvoice() {
         // This will be implemented to show create invoice form
         alert('Sąskaitos sukūrimas - bus įgyvendinta');
+    }
+
+    showReports() {
+        if (!['manager', 'supervisor', 'accounting', 'admin'].includes(this.currentUser.role)) {
+            alert('Neturite teisių peržiūrėti ataskaitas');
+            return;
+        }
+
+        this.currentView = 'reports';
+        
+        document.getElementById('mainContent').innerHTML = `
+            <div class="fade-in">
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Ataskaitos</h1>
+                    <p class="text-gray-600">Generuokite ir eksportuokite duomenų ataskaitas</p>
+                </div>
+
+                <!-- Report Types -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Requests Report -->
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-file-alt text-2xl text-blue-600 mr-3"></i>
+                            <div>
+                                <h3 class="text-lg font-semibold">Prašymų ataskaita</h3>
+                                <p class="text-sm text-gray-600">Visų prašymų sąrašas su detalėmis</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="app.generateReport('requests', 'csv')" class="btn-secondary">
+                                <i class="fas fa-file-csv mr-2"></i>CSV
+                            </button>
+                            <button onclick="app.generateReport('requests', 'excel')" class="btn-secondary">
+                                <i class="fas fa-file-excel mr-2"></i>Excel
+                            </button>
+                        </div>
+                        <button onclick="app.showReportFilters('requests')" class="w-full mt-3 text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-filter mr-1"></i>Filtrai ir peržiūra
+                        </button>
+                    </div>
+
+                    <!-- Orders Report -->
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-box text-2xl text-green-600 mr-3"></i>
+                            <div>
+                                <h3 class="text-lg font-semibold">Užsakymų ataskaita</h3>
+                                <p class="text-sm text-gray-600">Visų užsakymų sąrašas su būsenomis</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="app.generateReport('orders', 'csv')" class="btn-secondary">
+                                <i class="fas fa-file-csv mr-2"></i>CSV
+                            </button>
+                            <button onclick="app.generateReport('orders', 'excel')" class="btn-secondary">
+                                <i class="fas fa-file-excel mr-2"></i>Excel
+                            </button>
+                        </div>
+                        <button onclick="app.showReportFilters('orders')" class="w-full mt-3 text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-filter mr-1"></i>Filtrai ir peržiūra
+                        </button>
+                    </div>
+
+                    <!-- Invoices Report (Accounting only) -->
+                    ${(this.currentUser.role === 'accounting' || this.currentUser.role === 'admin') ? `
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-receipt text-2xl text-purple-600 mr-3"></i>
+                            <div>
+                                <h3 class="text-lg font-semibold">Sąskaitų ataskaita</h3>
+                                <p class="text-sm text-gray-600">Sąskaitų faktūrų ir mokėjimų ataskaita</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="app.generateReport('invoices', 'csv')" class="btn-secondary">
+                                <i class="fas fa-file-csv mr-2"></i>CSV
+                            </button>
+                            <button onclick="app.generateReport('invoices', 'excel')" class="btn-secondary">
+                                <i class="fas fa-file-excel mr-2"></i>Excel
+                            </button>
+                        </div>
+                        <button onclick="app.showReportFilters('invoices')" class="w-full mt-3 text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-filter mr-1"></i>Filtrai ir peržiūra
+                        </button>
+                    </div>
+                    ` : ''}
+
+                    <!-- Financial Summary -->
+                    ${(this.currentUser.role === 'supervisor' || this.currentUser.role === 'accounting' || this.currentUser.role === 'admin') ? `
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-chart-pie text-2xl text-yellow-600 mr-3"></i>
+                            <div>
+                                <h3 class="text-lg font-semibold">Finansų suvestinė</h3>
+                                <p class="text-sm text-gray-600">Išlaidų suvestinė pagal skyrius</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="app.generateReport('financial-summary', 'csv')" class="btn-secondary">
+                                <i class="fas fa-file-csv mr-2"></i>CSV
+                            </button>
+                            <button onclick="app.generateReport('financial-summary', 'excel')" class="btn-secondary">
+                                <i class="fas fa-file-excel mr-2"></i>Excel
+                            </button>
+                        </div>
+                        <button onclick="app.showReportFilters('financial-summary')" class="w-full mt-3 text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-filter mr-1"></i>Filtrai ir peržiūra
+                        </button>
+                    </div>
+                    ` : ''}
+
+                    <!-- Users Report (Admin only) -->
+                    ${this.currentUser.role === 'admin' ? `
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <div class="flex items-center mb-4">
+                            <i class="fas fa-users text-2xl text-red-600 mr-3"></i>
+                            <div>
+                                <h3 class="text-lg font-semibold">Vartotojų aktyvumas</h3>
+                                <p class="text-sm text-gray-600">Vartotojų aktyvumo statistikos</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="app.generateReport('users', 'csv')" class="btn-secondary">
+                                <i class="fas fa-file-csv mr-2"></i>CSV
+                            </button>
+                            <button onclick="app.generateReport('users', 'excel')" class="btn-secondary">
+                                <i class="fas fa-file-excel mr-2"></i>Excel
+                            </button>
+                        </div>
+                        <button onclick="app.showReportFilters('users')" class="w-full mt-3 text-blue-600 hover:text-blue-800 text-sm">
+                            <i class="fas fa-filter mr-1"></i>Filtrai ir peržiūra
+                        </button>
+                    </div>
+                    ` : ''}
+                </div>
+
+                <!-- Recent Reports Activity -->
+                <div class="bg-white rounded-lg shadow">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 class="text-lg font-medium text-gray-900">Greitas eksportavimas</h3>
+                        <p class="text-sm text-gray-600">Dažniausiai naudojamos ataskaitos</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <button onclick="app.generateReport('requests', 'excel', {status: 'pending_approval'})" class="quick-report-btn">
+                                <i class="fas fa-clock text-orange-500 mr-2"></i>
+                                Laukiantys patvirtinimo
+                            </button>
+                            <button onclick="app.generateReport('orders', 'excel', {status: 'delivered'})" class="quick-report-btn">
+                                <i class="fas fa-truck text-green-500 mr-2"></i>
+                                Pristatyti užsakymai
+                            </button>
+                            ${(this.currentUser.role === 'accounting' || this.currentUser.role === 'admin') ? `
+                            <button onclick="app.generateReport('invoices', 'excel', {paid: 'false'})" class="quick-report-btn">
+                                <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                                Neapmokėtos sąskaitos
+                            </button>
+                            ` : ''}
+                            <button onclick="app.generateReport('financial-summary', 'excel', {date_from: app.getFirstDayOfMonth()})" class="quick-report-btn">
+                                <i class="fas fa-calendar text-blue-500 mr-2"></i>
+                                Šio mėnesio išlaidos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Add CSS styles for report buttons
+        const style = document.createElement('style');
+        style.textContent = `
+            .btn-secondary {
+                padding: 8px 16px;
+                background: #f3f4f6;
+                border: 1px solid #d1d5db;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: 500;
+                color: #374151;
+                transition: all 0.2s;
+            }
+            .btn-secondary:hover {
+                background: #e5e7eb;
+                border-color: #9ca3af;
+            }
+            .quick-report-btn {
+                padding: 12px;
+                background: #f9fafb;
+                border: 1px solid #e5e7eb;
+                border-radius: 8px;
+                text-align: left;
+                font-size: 14px;
+                color: #374151;
+                transition: all 0.2s;
+            }
+            .quick-report-btn:hover {
+                background: #f3f4f6;
+                border-color: #d1d5db;
+                transform: translateY(-1px);
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    async generateReport(type, format, filters = {}) {
+        try {
+            // Show loading
+            const loadingEl = document.createElement('div');
+            loadingEl.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+            loadingEl.innerHTML = `
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="loading mx-auto mb-4"></div>
+                    <p class="text-center">Generuojama ataskaita...</p>
+                </div>
+            `;
+            document.body.appendChild(loadingEl);
+
+            // Build query parameters
+            const params = new URLSearchParams({ format, ...filters });
+            
+            const response = await fetch(`/api/v1/reports/${type}?${params}`, {
+                headers: {
+                    'Authorization': `Bearer ${this.token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate report');
+            }
+
+            // Get filename from response headers
+            const contentDisposition = response.headers.get('Content-Disposition');
+            let filename = `ataskaita_${type}_${new Date().toISOString().split('T')[0]}.${format === 'excel' ? 'tsv' : 'csv'}`;
+            
+            if (contentDisposition) {
+                const match = contentDisposition.match(/filename="(.+)"/);
+                if (match) {
+                    filename = match[1];
+                }
+            }
+
+            // Download file
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+
+            // Remove loading
+            document.body.removeChild(loadingEl);
+
+        } catch (error) {
+            console.error('Generate report error:', error);
+            alert('Klaida generuojant ataskaitą: ' + error.message);
+            
+            // Remove loading if exists
+            const loadingEl = document.querySelector('.fixed.inset-0');
+            if (loadingEl) {
+                document.body.removeChild(loadingEl);
+            }
+        }
+    }
+
+    async showReportFilters(type) {
+        // This will show a modal with filters and preview
+        alert('Filtrų ir peržiūros funkcionalumas - bus įgyvendinta');
+    }
+
+    getFirstDayOfMonth() {
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0];
     }
 }
 

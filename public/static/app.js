@@ -152,6 +152,11 @@ class OrderApp {
                                         📦 Užsakymai
                                     </button>
                                     ` : ''}
+                                    ${(this.currentUser.role === 'accounting' || this.currentUser.role === 'manager') ? `
+                                    <button onclick="app.showInvoices()" class="nav-link border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                                        🧾 Sąskaitos
+                                    </button>
+                                    ` : ''}
                                 </div>
                             </div>
                             <div class="hidden sm:ml-6 sm:flex sm:items-center">
@@ -1219,6 +1224,285 @@ class OrderApp {
         paginationHtml += '</div>';
         
         document.getElementById('pagination').innerHTML = paginationHtml;
+    }
+
+    showInvoices() {
+        if (this.currentUser.role !== 'accounting' && this.currentUser.role !== 'manager') {
+            alert('Neturite teisių peržiūrėti sąskaitų');
+            return;
+        }
+
+        this.currentView = 'invoices';
+        
+        document.getElementById('mainContent').innerHTML = `
+            <div class="fade-in">
+                <div class="mb-6">
+                    <h1 class="text-2xl font-bold text-gray-900">Sąskaitos faktūros</h1>
+                    <p class="text-gray-600">Valdykite sąskaitas faktūras ir mokėjimus</p>
+                </div>
+
+                <!-- Filter tabs -->
+                <div class="mb-6">
+                    <div class="border-b border-gray-200">
+                        <nav class="-mb-px flex space-x-8">
+                            <button onclick="app.loadInvoices('all')" id="filter-all" class="invoice-filter-tab border-b-2 border-blue-500 text-blue-600 py-2 px-1 text-sm font-medium">
+                                Visos sąskaitos
+                            </button>
+                            <button onclick="app.loadInvoices('proforma')" id="filter-proforma" class="invoice-filter-tab border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-2 px-1 text-sm font-medium">
+                                Proforma
+                            </button>
+                            <button onclick="app.loadInvoices('final')" id="filter-final" class="invoice-filter-tab border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-2 px-1 text-sm font-medium">
+                                Galutinės
+                            </button>
+                            <button onclick="app.loadInvoices('vat')" id="filter-vat" class="invoice-filter-tab border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-2 px-1 text-sm font-medium">
+                                PVM
+                            </button>
+                            <button onclick="app.loadInvoices('pending')" id="filter-pending" class="invoice-filter-tab border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-2 px-1 text-sm font-medium">
+                                Neapmokėtos
+                            </button>
+                            <button onclick="app.loadInvoices('paid')" id="filter-paid" class="invoice-filter-tab border-b-2 border-transparent text-gray-500 hover:text-gray-700 py-2 px-1 text-sm font-medium">
+                                Apmokėtos
+                            </button>
+                        </nav>
+                    </div>
+                </div>
+
+                <!-- Add Invoice Button -->
+                <div class="mb-4">
+                    <button onclick="app.showCreateInvoice()" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
+                        <i class="fas fa-plus mr-2"></i>
+                        Nauja sąskaita
+                    </button>
+                </div>
+
+                <!-- Invoices List -->
+                <div class="bg-white shadow rounded-lg">
+                    <div id="invoicesList">
+                        <div class="p-6 text-center">
+                            <div class="loading mx-auto"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div id="pagination" class="mt-4"></div>
+            </div>
+        `;
+
+        this.loadInvoices();
+    }
+
+    async loadInvoices(type = 'all', page = 1) {
+        try {
+            const params = new URLSearchParams({ page: page.toString(), per_page: '10' });
+            if (type && type !== 'all') {
+                if (type === 'pending') {
+                    params.set('payment_status', 'pending');
+                } else if (type === 'paid') {
+                    params.set('payment_status', 'paid');
+                } else {
+                    params.set('type', type);
+                }
+            }
+
+            const response = await axios.get(`/invoices?${params}`);
+            const { data: invoices, pagination } = response.data;
+
+            // Update active filter tab
+            document.querySelectorAll('.invoice-filter-tab').forEach(tab => {
+                tab.classList.remove('border-blue-500', 'text-blue-600');
+                tab.classList.add('border-transparent', 'text-gray-500');
+            });
+            document.getElementById(`filter-${type}`).classList.remove('border-transparent', 'text-gray-500');
+            document.getElementById(`filter-${type}`).classList.add('border-blue-500', 'text-blue-600');
+
+            if (invoices.length > 0) {
+                const invoicesHtml = `
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Sąskaita Nr.
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Užsakymas
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Tipas
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Suma
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Būsena
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Sukurta
+                                    </th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                        Veiksmai
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                ${invoices.map(invoice => `
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                            ${invoice.invoice_number}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            #${invoice.order_id}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${this.getInvoiceTypeBadgeClass(invoice.type)}">
+                                                ${this.getInvoiceTypeLabel(invoice.type)}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                            €${parseFloat(invoice.amount).toFixed(2)}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${this.getPaymentStatusBadgeClass(invoice.payment_status)}">
+                                                ${this.getPaymentStatusLabel(invoice.payment_status)}
+                                            </span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            ${new Date(invoice.created_at).toLocaleDateString('lt-LT')}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            <button onclick="app.viewInvoice(${invoice.id})" class="text-blue-600 hover:text-blue-800 mr-3">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                            ${invoice.payment_status === 'pending' ? `
+                                            <button onclick="app.markInvoicePaid(${invoice.id})" class="text-green-600 hover:text-green-800 mr-3" title="Pažymėti kaip apmokėtą">
+                                                <i class="fas fa-check-circle"></i>
+                                            </button>
+                                            ` : ''}
+                                            <button onclick="app.editInvoice(${invoice.id})" class="text-yellow-600 hover:text-yellow-800 mr-3">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button onclick="app.deleteInvoice(${invoice.id})" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                document.getElementById('invoicesList').innerHTML = invoicesHtml;
+                
+                // Update pagination if needed
+                if (pagination.total_pages > 1) {
+                    this.updatePagination(pagination, 'loadInvoices');
+                } else {
+                    document.getElementById('pagination').innerHTML = '';
+                }
+            } else {
+                document.getElementById('invoicesList').innerHTML = `
+                    <div class="p-6 text-center text-gray-500">
+                        <i class="fas fa-receipt text-4xl mb-4"></i>
+                        <p>Sąskaitų nėra</p>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Error loading invoices:', error);
+            document.getElementById('invoicesList').innerHTML = `
+                <div class="p-6 text-center text-red-600">
+                    <i class="fas fa-exclamation-circle text-4xl mb-4"></i>
+                    Klaida kraunant sąskaitas
+                </div>
+            `;
+        }
+    }
+
+    getInvoiceTypeBadgeClass(type) {
+        const classes = {
+            'proforma': 'bg-blue-100 text-blue-800',
+            'final': 'bg-green-100 text-green-800',
+            'vat': 'bg-purple-100 text-purple-800'
+        };
+        return classes[type] || 'bg-gray-100 text-gray-800';
+    }
+
+    getInvoiceTypeLabel(type) {
+        const labels = {
+            'proforma': 'Proforma',
+            'final': 'Galutinė',
+            'vat': 'PVM'
+        };
+        return labels[type] || type;
+    }
+
+    getPaymentStatusBadgeClass(status) {
+        const classes = {
+            'pending': 'bg-yellow-100 text-yellow-800',
+            'paid': 'bg-green-100 text-green-800',
+            'overdue': 'bg-red-100 text-red-800'
+        };
+        return classes[status] || 'bg-gray-100 text-gray-800';
+    }
+
+    getPaymentStatusLabel(status) {
+        const labels = {
+            'pending': 'Neapmokėta',
+            'paid': 'Apmokėta',
+            'overdue': 'Просрочена'
+        };
+        return labels[status] || status;
+    }
+
+    async viewInvoice(invoiceId) {
+        // This will be implemented to show invoice details
+        alert('Sąskaitos peržiūra - bus įgyvendinta');
+    }
+
+    async markInvoicePaid(invoiceId) {
+        if (!confirm('Ar tikrai norite pažymėti šią sąskaitą kaip apmokėtą?')) {
+            return;
+        }
+
+        try {
+            await axios.patch(`/invoices/${invoiceId}`, {
+                payment_status: 'paid',
+                payment_date: new Date().toISOString()
+            });
+
+            // Reload invoices to reflect the change
+            this.loadInvoices();
+            
+            alert('Sąskaita pažymėta kaip apmokėta');
+        } catch (error) {
+            alert('Klaida atnaujinant sąskaitos būseną: ' + (error.response?.data?.message || error.message));
+        }
+    }
+
+    async editInvoice(invoiceId) {
+        // This will be implemented to edit invoice details
+        alert('Sąskaitos redagavimas - bus įgyvendinta');
+    }
+
+    async deleteInvoice(invoiceId) {
+        if (!confirm('Ar tikrai norite ištrinti šią sąskaitą? Šis veiksmas negrįžtamas.')) {
+            return;
+        }
+
+        try {
+            await axios.delete(`/invoices/${invoiceId}`);
+            this.loadInvoices(); // Reload the list
+            alert('Sąskaita ištrinta sėkmingai');
+        } catch (error) {
+            alert('Klaida trinant sąskaitą: ' + (error.response?.data?.message || error.message));
+        }
+    }
+
+    async showCreateInvoice() {
+        // This will be implemented to show create invoice form
+        alert('Sąskaitos sukūrimas - bus įgyvendinta');
     }
 }
 

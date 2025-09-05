@@ -13,8 +13,8 @@ Pilna prekių užsakymų valdymo sistema, skirta organizacijos darbuotojų praš
 - ✅ **Dashboard ir statistikos** - Realaus laiko duomenų vizualizacija
 - ✅ **Notifikacijos** - Automatiniai pranešimai apie būsenos pakeitimus
 - ✅ **Audito žurnalas** - Visų veiksmų sekimas
-- ⚠️ **Sąskaitų valdymas** - Išankstinės ir galutinės sąskaitos (API paruoštas)
-- ⚠️ **Failų įkėlimas** - Dokumentų prisegimas (API paruoštas)
+- ✅ **Sąskaitų valdymas** - Proforma, galutinės ir PVM sąskaitos su failų įkėlimo palaikymu
+- ✅ **Failų įkėlimas** - PDF/JPEG/PNG failų įkėlimas iki 10MB (Cloudflare R2)
 - ⚠️ **Ataskaitos** - Excel/CSV eksportavimas (API paruoštas)
 
 ### Technologijų stack'as
@@ -38,6 +38,8 @@ Pilna prekių užsakymų valdymo sistema, skirta organizacijos darbuotojų praš
 - **Authentication**: `/api/v1/auth/*`
 - **Requests**: `/api/v1/requests/*` 
 - **Orders**: `/api/v1/orders/*`
+- **Invoices**: `/api/v1/invoices/*`
+- **Files**: `/api/v1/files/*`
 - **Suppliers**: `/api/v1/suppliers`
 - **Categories**: `/api/v1/categories`
 - **Notifications**: `/api/v1/notifications`
@@ -135,6 +137,26 @@ Vadybininkas → Siuntimas tiekėjui → Pristatymas (delivered) → Užbaigimas
 3. **Patvirtinkite arba atmeskite** su savo komentaru
 4. **Patvirtinus** automatiškai sukuriamas užsakymas
 
+### Kaip valdyti sąskaitas (buhalterėms/vadybininkėms):
+
+1. **Atidarykite "Sąskaitos"** sekciją (tik accounting/manager rolėms)
+2. **Filtruokite sąskaitas** pagal tipą:
+   - Proforma sąskaitos
+   - Galutinės sąskaitos  
+   - PVM sąskaitos
+   - Neapmokėtos/Apmokėtos
+
+3. **Sukurkite naują sąskaitą**:
+   - Spauskite "Nauja sąskaita"
+   - Pasirinkite užsakymą
+   - Nurodykite sąskaitos tipą ir sumą
+   - Prisegkite PDF failą (nebūtina)
+
+4. **Valdykite mokėjimus**:
+   - Pažymėkite kaip "Apmokėta" kai gaujate mokėjimą
+   - Sistema automatiškai atnaujins užsakymo būseną
+   - Bus išsiųsti automatiniai pranešimai
+
 ### Dashboard funkcijos:
 
 - **Statistikos kortelės** - prašymų skaičiai pagal būsenas
@@ -206,7 +228,9 @@ webapp/
 │   └── routes/
 │       ├── auth.ts        # Prisijungimo API
 │       ├── requests.ts    # Prašymų API  
-│       └── orders.ts      # Užsakymų API
+│       ├── orders.ts      # Užsakymų API
+│       ├── invoices.ts    # Sąskaitų valdymo API
+│       └── files.ts       # Failų įkėlimo API
 ├── public/static/
 │   ├── app.js            # Frontend JavaScript (SPA)
 │   └── styles.css        # CSS stiliai
@@ -224,9 +248,9 @@ webapp/
 
 ### Sekantys žingsniai:
 
-1. **Failų įkėlimas** - implementuoti R2 storage integraciją sąskaitoms
-2. **Sąskaitų valdymas** - užbaigti invoice management funkcionalumą
-3. **Email notifikacijos** - integruoti su email paslaugomis
+1. **Email notifikacijos** - integruoti su email paslaugomis (SendGrid/Mailgun)
+2. **Sąskaitų UI tobulinimas** - sąskaitos kūrimo, redagavimo ir peržiūros formos
+3. **Mokėjimo integracijos** - Stripe/PayPal mokėjimo šluzų integracijos
 4. **Ataskaitos** - Excel/CSV export funkcionalumas
 5. **Advanced filtrai** - daugiau paieškos ir filtravimo opcijų
 6. **Mobile app** - React Native arba PWA versija
@@ -276,6 +300,6 @@ npm run db:console:local
 ---
 
 **Versija**: 1.0.0  
-**Paskutinis atnaujinimas**: 2024-01-15  
+**Paskutinis atnaujinimas**: 2025-09-05  
 **Deployment Status**: ✅ Development Ready / ⏳ Production Pending  
 **GitHub**: Reikia sukonfigūruoti GitHub integraciją

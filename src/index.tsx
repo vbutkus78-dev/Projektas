@@ -7,6 +7,8 @@ import { authMiddleware } from './middleware/auth';
 import auth from './routes/auth';
 import requests from './routes/requests';
 import orders from './routes/orders';
+import files from './routes/files';
+import invoices from './routes/invoices';
 
 import type { Bindings } from './types';
 
@@ -27,6 +29,8 @@ app.use('/static/*', serveStatic({ root: './public' }));
 app.route('/api/v1/auth', auth);
 app.route('/api/v1/requests', requests);
 app.route('/api/v1/orders', orders);
+app.route('/api/v1/files', files);
+app.route('/api/v1/invoices', invoices);
 
 // Health check
 app.get('/api/health', (c) => {
@@ -46,6 +50,8 @@ app.get('/api/v1', (c) => {
       auth: '/api/v1/auth',
       requests: '/api/v1/requests',
       orders: '/api/v1/orders',
+      invoices: '/api/v1/invoices',
+      files: '/api/v1/files',
       health: '/api/health'
     }
   });

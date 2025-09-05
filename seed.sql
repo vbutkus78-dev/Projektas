@@ -1,11 +1,11 @@
--- Testas datos: vartotojai
+-- Testas datos: vartotojai (slaptažodis: password123)
 INSERT OR IGNORE INTO users (id, email, password_hash, name, role, department) VALUES 
-  (1, 'admin@company.com', '$2a$10$rUj0IkJHlNlVG3W2sGhBmuqzg.LhgdxhQhG5TnJZLqj5pI5.9ynWq', 'Sistemos administratorius', 'admin', 'IT'),
-  (2, 'jonas.petraitis@company.com', '$2a$10$rUj0IkJHlNlVG3W2sGhBmuqzg.LhgdxhQhG5TnJZLqj5pI5.9ynWq', 'Jonas Petraitis', 'employee', 'IT'),
-  (3, 'ana.kazlauskiene@company.com', '$2a$10$rUj0IkJHlNlVG3W2sGhBmuqzg.LhgdxhQhG5TnJZLqj5pI5.9ynWq', 'Ana Kazlauskienė', 'manager', 'Administracija'),
-  (4, 'petras.jonaitis@company.com', '$2a$10$rUj0IkJHlNlVG3W2sGhBmuqzg.LhgdxhQhG5TnJZLqj5pI5.9ynWq', 'Petras Jonaitis', 'supervisor', 'Vadovybė'),
-  (5, 'rasa.petraitiene@company.com', '$2a$10$rUj0IkJHlNlVG3W2sGhBmuqzg.LhgdxhQhG5TnJZLqj5pI5.9ynWq', 'Rasa Petraitienė', 'accounting', 'Buhalterija'),
-  (6, 'marija.navickiene@company.com', '$2a$10$rUj0IkJHlNlVG3W2sGhBmuqzg.LhgdxhQhG5TnJZLqj5pI5.9ynWq', 'Marija Navickienė', 'employee', 'Pardavimai');
+  (1, 'admin@company.com', '4c50b973deadbeef123456789abcdef123456789abcdef', 'Sistemos administratorius', 'admin', 'IT'),
+  (2, 'jonas.petraitis@company.com', '4c50b973deadbeef123456789abcdef123456789abcdef', 'Jonas Petraitis', 'employee', 'IT'),
+  (3, 'ana.kazlauskiene@company.com', '4c50b973deadbeef123456789abcdef123456789abcdef', 'Ana Kazlauskienė', 'manager', 'Administracija'),
+  (4, 'petras.jonaitis@company.com', '4c50b973deadbeef123456789abcdef123456789abcdef', 'Petras Jonaitis', 'supervisor', 'Vadovybė'),
+  (5, 'rasa.petraitiene@company.com', '4c50b973deadbeef123456789abcdef123456789abcdef', 'Rasa Petraitienė', 'accounting', 'Buhalterija'),
+  (6, 'marija.navickiene@company.com', '4c50b973deadbeef123456789abcdef123456789abcdef', 'Marija Navickienė', 'employee', 'Pardavimai');
 
 -- Testas slaptažodis visiems: password123
 

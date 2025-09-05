@@ -11,7 +11,7 @@
     {
       "binding": "DB",
       "database_name": "webapp-production",
-      "database_id": "" // Will be set after creating D1 database
+      "database_id": "00000000-0000-0000-0000-000000000000"
     }
   ],
 

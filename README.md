@@ -15,7 +15,8 @@ Pilna prekių užsakymų valdymo sistema, skirta organizacijos darbuotojų praš
 - ✅ **Audito žurnalas** - Visų veiksmų sekimas
 - ✅ **Sąskaitų valdymas** - Proforma, galutinės ir PVM sąskaitos su failų įkėlimo palaikymu
 - ✅ **Failų įkėlimas** - PDF/JPEG/PNG failų įkėlimas iki 10MB (Cloudflare R2)
-- ⚠️ **Ataskaitos** - Excel/CSV eksportavimas (API paruoštas)
+- ✅ **Email notifikacijos** - SendGrid integracijos su HTML šablonais visoms būsenoms
+- ✅ **Ataskaitos** - 5 tipų ataskaitos su CSV/Excel eksportavimu
 
 ### Technologijų stack'as
 
@@ -40,6 +41,7 @@ Pilna prekių užsakymų valdymo sistema, skirta organizacijos darbuotojų praš
 - **Orders**: `/api/v1/orders/*`
 - **Invoices**: `/api/v1/invoices/*`
 - **Files**: `/api/v1/files/*`
+- **Reports**: `/api/v1/reports/*`
 - **Suppliers**: `/api/v1/suppliers`
 - **Categories**: `/api/v1/categories`
 - **Notifications**: `/api/v1/notifications`
@@ -137,6 +139,26 @@ Vadybininkas → Siuntimas tiekėjui → Pristatymas (delivered) → Užbaigimas
 3. **Patvirtinkite arba atmeskite** su savo komentaru
 4. **Patvirtinus** automatiškai sukuriamas užsakymas
 
+### Kaip naudoti ataskaitas (vadybininkams/vadovams/buhalterėms):
+
+1. **Atidarykite "Ataskaitos"** sekciją (priklausomai nuo rolės)
+2. **Pasirinkite ataskaitos tipą**:
+   - Prašymų ataskaita (visi autorizuoti)
+   - Užsakymų ataskaita (visi autorizuoti)  
+   - Sąskaitų ataskaita (tik accounting/admin)
+   - Finansų suvestinė (supervisor/accounting/admin)
+   - Vartotojų aktyvumas (tik admin)
+
+3. **Eksportuokite duomenis**:
+   - CSV formatas - standartinis duomenų formatas
+   - Excel formatas - TSV su Excel suderinamumo palaikymu
+   - Greiti eksportai dažnoms ataskaitoms
+
+4. **Filtruokite duomenis** pagal:
+   - Datų intervalą
+   - Būsenas ir tipus
+   - Skyrius ir vartotojus
+
 ### Kaip valdyti sąskaitas (buhalterėms/vadybininkėms):
 
 1. **Atidarykite "Sąskaitos"** sekciją (tik accounting/manager rolėms)
@@ -224,13 +246,16 @@ webapp/
 │   ├── middleware/auth.ts  # Autentifikacijos middleware
 │   ├── utils/
 │   │   ├── auth.ts        # JWT ir slaptažodžių valdymas
-│   │   └── db.ts          # Duomenų bazės utiliai
+│   │   ├── db.ts          # Duomenų bazės utiliai
+│   │   ├── email.ts       # Email notifikacijų sistema
+│   │   └── reports.ts     # Ataskaitų generavimo utiliai
 │   └── routes/
 │       ├── auth.ts        # Prisijungimo API
 │       ├── requests.ts    # Prašymų API  
 │       ├── orders.ts      # Užsakymų API
 │       ├── invoices.ts    # Sąskaitų valdymo API
-│       └── files.ts       # Failų įkėlimo API
+│       ├── files.ts       # Failų įkėlimo API
+│       └── reports.ts     # Ataskaitų generavimo API
 ├── public/static/
 │   ├── app.js            # Frontend JavaScript (SPA)
 │   └── styles.css        # CSS stiliai
@@ -248,9 +273,9 @@ webapp/
 
 ### Sekantys žingsniai:
 
-1. **Email notifikacijos** - integruoti su email paslaugomis (SendGrid/Mailgun)
-2. **Sąskaitų UI tobulinimas** - sąskaitos kūrimo, redagavimo ir peržiūros formos
-3. **Mokėjimo integracijos** - Stripe/PayPal mokėjimo šluzų integracijos
+1. **Sąskaitų UI tobulinimas** - sąskaitos kūrimo, redagavimo ir peržiūros formos  
+2. **Mokėjimo integracijos** - Stripe/PayPal mokėjimo šluzų integracijos
+3. **Pažangūs filtrai** - išsamesnių filtrų ir paieškos galimybių pridėjimas
 4. **Ataskaitos** - Excel/CSV export funkcionalumas
 5. **Advanced filtrai** - daugiau paieškos ir filtravimo opcijų
 6. **Mobile app** - React Native arba PWA versija
@@ -275,6 +300,36 @@ webapp/
 - ⚠️ Caching (Redis arba Cloudflare Cache)
 - ⚠️ Image optimization (jei bus failų įkėlimas)
 
+## Konfigūracijos parametrai
+
+### Email notifikacijos (neprivaloma)
+
+Sistemoje veiks ir be email konfigūracijos, bet norint gauti automatines email notifikacijas:
+
+1. **Registruokitės SendGrid** - https://sendgrid.com
+2. **Sukurkite API raktą** su "Mail Send" teisėmis
+3. **Nustatykite aplinkos kintamąjį**:
+   ```bash
+   # .dev.vars (lokaliam plėtojimui)
+   SENDGRID_API_KEY=your-sendgrid-api-key
+   FROM_EMAIL=noreply@jūsų-domenas.lt
+   FROM_NAME=Prekių užsakymų sistema
+   APP_URL=https://jūsų-aplikacija.pages.dev
+
+   # Production (Cloudflare Pages secrets)
+   npx wrangler pages secret put SENDGRID_API_KEY --project-name webapp
+   npx wrangler pages secret put FROM_EMAIL --project-name webapp
+   npx wrangler pages secret put APP_URL --project-name webapp
+   ```
+
+### Email šablonai
+Sistema automatiškai siųs email pranešimus:
+- ✅ Prašymo pateikimas (vadybininkams)
+- ✅ Prašymo patvirtinimas/atmetimas (prašytojui)
+- ✅ Užsakymo būsenos keitimai (prašytojui)  
+- ✅ Sąskaitų mokėjimo pranešimai (buhalterėms/prašytojams)
+- ✅ Pasveikinimo laiškai naujiems vartotojams
+
 ## Support ir troubleshooting
 
 ### Dažniausios klaidos:
@@ -283,6 +338,7 @@ webapp/
 2. **"Permission denied"** - Patikrinkite vartotojo rolę
 3. **Database errors** - Pabandykite `npm run db:reset`
 4. **Build errors** - Ištrinkite `node_modules` ir `npm install`
+5. **Email not sending** - Patikrinkite SendGrid API raktą ir kreditus
 
 ### Logai:
 

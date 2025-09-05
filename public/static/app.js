@@ -821,12 +821,12 @@ class OrderApp {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Skyrius</label>
-                                <input type="text" id="department" value="${this.currentUser.department || ''}" 
+                                <input type="text" name="department" id="department" value="${this.currentUser.department || ''}" 
                                        class="w-full border border-gray-300 rounded-md px-3 py-2" required>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Prioritetas</label>
-                                <select id="priority" class="w-full border border-gray-300 rounded-md px-3 py-2">
+                                <select name="priority" id="priority" class="w-full border border-gray-300 rounded-md px-3 py-2">
                                     <option value="low">Žemas</option>
                                     <option value="normal" selected>Normalus</option>
                                     <option value="high">Aukštas</option>
@@ -835,13 +835,13 @@ class OrderApp {
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-2">Reikia iki</label>
-                                <input type="date" id="needed_by_date" 
+                                <input type="date" name="needed_by" id="needed_by" 
                                        class="w-full border border-gray-300 rounded-md px-3 py-2">
                             </div>
                         </div>
                         <div class="mt-4">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Pagrindimas</label>
-                            <textarea id="justification" rows="3" 
+                            <textarea name="justification" id="justification" rows="3" 
                                       class="w-full border border-gray-300 rounded-md px-3 py-2"
                                       placeholder="Kodėl reikalingos šios prekės ar paslaugos?"></textarea>
                         </div>
@@ -950,7 +950,7 @@ class OrderApp {
                 department: formData.get('department'),
                 priority: formData.get('priority'),
                 justification: formData.get('justification'),
-                needed_by_date: formData.get('needed_by_date'),
+                needed_by: formData.get('needed_by'),
                 lines: []
             };
 

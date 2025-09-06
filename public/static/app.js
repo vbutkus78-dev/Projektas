@@ -898,10 +898,12 @@ class OrderApp {
             <div class="border border-gray-200 rounded-md p-4 mb-4" id="line-${lineIndex}">
                 <div class="flex justify-between items-start mb-4">
                     <h4 class="text-sm font-medium text-gray-900">Prekė #${lineIndex + 1}</h4>
-                    <button type="button" onclick="this.parentElement.parentElement.remove()" 
+                    ${lineIndex > 0 ? `
+                    <button type="button" onclick="app.removeRequestLine(this)" 
                             class="text-red-600 hover:text-red-800 text-sm">
-                        Šalinti
+                        <i class="fas fa-trash mr-1"></i>Šalinti
                     </button>
+                    ` : ''}
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     <div class="lg:col-span-2">
@@ -938,6 +940,25 @@ class OrderApp {
         `;
 
         linesContainer.insertAdjacentHTML('beforeend', lineHtml);
+        this.updateLineNumbers();
+    }
+
+    removeRequestLine(button) {
+        const lineDiv = button.closest('.border');
+        if (lineDiv) {
+            lineDiv.remove();
+            this.updateLineNumbers();
+        }
+    }
+
+    updateLineNumbers() {
+        const lines = document.querySelectorAll('#requestLines > div');
+        lines.forEach((line, index) => {
+            const title = line.querySelector('h4');
+            if (title) {
+                title.textContent = `Prekė #${index + 1}`;
+            }
+        });
     }
 
     async submitNewRequest(asDraft = false) {

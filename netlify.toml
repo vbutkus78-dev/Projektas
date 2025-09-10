@@ -1,0 +1,15 @@
+[build]
+  # No build command needed for static site
+  command = "echo 'Static site - no build needed'"
+  
+  # Publish the netlify directory
+  publish = "netlify"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# SPA redirect rules
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

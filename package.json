@@ -2,9 +2,9 @@
   "name": "webapp",
   "version": "1.0.0",
   "description": "Prekių užsakymų valdymo sistema",
-  "main": "render-server.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node render-server.js",
+    "start": "node server.js",
     "dev": "vite",
     "dev:sandbox": "wrangler pages dev dist --ip 0.0.0.0 --port 3000",
     "dev:d1": "wrangler pages dev dist --d1=webapp-production --local --ip 0.0.0.0 --port 3000",
@@ -27,10 +27,7 @@
     "git:status": "git status",
     "git:log": "git log --oneline"
   },
-  "dependencies": {
-    "hono": "^4.0.0",
-    "@hono/node-server": "^1.12.0"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250705.0",
     "@hono/vite-cloudflare-pages": "^0.4.2",

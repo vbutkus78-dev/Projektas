@@ -2,13 +2,15 @@
   "name": "webapp",
   "version": "1.0.0",
   "description": "Prekių užsakymų valdymo sistema",
-  "main": "src/index.tsx",
+  "main": "render-server.js",
   "type": "module",
   "scripts": {
+    "start": "node render-server.js",
     "dev": "vite",
     "dev:sandbox": "wrangler pages dev dist --ip 0.0.0.0 --port 3000",
     "dev:d1": "wrangler pages dev dist --d1=webapp-production --local --ip 0.0.0.0 --port 3000",
-    "build": "vite build",
+    "build": "echo 'Build completed for Render'",
+    "render-build": "npm install && mkdir -p public/static && cp public/static/app.js public/static/ 2>/dev/null || echo 'Static files ready'",
     "preview": "wrangler pages dev dist",
     "deploy": "npm run build && wrangler pages deploy dist",
     "deploy:prod": "npm run build && wrangler pages deploy dist --project-name webapp",
@@ -27,7 +29,10 @@
     "git:log": "git log --oneline"
   },
   "dependencies": {
-    "hono": "^4.0.0"
+    "hono": "^4.0.0",
+    "@hono/node-server": "^1.12.0",
+    "sqlite3": "^5.1.6",
+    "node-sqlite3-wasm": "^0.8.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250705.0",

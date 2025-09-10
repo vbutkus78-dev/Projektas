@@ -9,7 +9,7 @@
 </head>
 <body class="bg-gray-100">
     <div class="min-h-screen flex items-center justify-center">
-        <div class="max-w-2xl w-full bg-white rounded-lg shadow-md p-8">
+        <div class="max-w-4xl w-full bg-white rounded-lg shadow-md p-8">
             <!-- Login Form -->
             <div id="login-section">
                 <div class="text-center mb-8">
@@ -38,22 +38,27 @@
                     </div>
                     
                     <div class="bg-gray-50 p-4 rounded-md">
-                        <h4 class="text-sm font-medium text-gray-700 mb-3">Demo vartotojai:</h4>
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Sistemos vartotojai:</h4>
                         <div class="space-y-2">
                             <div class="p-2 bg-white rounded border">
-                                <div class="font-medium text-sm">Administrator</div>
+                                <div class="font-medium text-sm text-red-600">Vadybininkas (Admin)</div>
                                 <div class="text-xs text-gray-600">admin@company.com / admin123</div>
-                                <div class="text-xs text-blue-600">Pilna sistemos prieiga</div>
+                                <div class="text-xs text-red-600">Pilna sistemos kontrolė</div>
                             </div>
                             <div class="p-2 bg-white rounded border">
-                                <div class="font-medium text-sm">Vadybininkas</div>
-                                <div class="text-xs text-gray-600">manager@company.com / manager123</div>
-                                <div class="text-xs text-green-600">Užklausų valdymas</div>
+                                <div class="font-medium text-sm text-blue-600">Techninis direktorius</div>
+                                <div class="text-xs text-gray-600">tech@company.com / tech123</div>
+                                <div class="text-xs text-blue-600">Užklausų valdymas</div>
                             </div>
                             <div class="p-2 bg-white rounded border">
-                                <div class="font-medium text-sm">Darbuotojas</div>
+                                <div class="font-medium text-sm text-purple-600">Direktorius</div>
+                                <div class="text-xs text-gray-600">director@company.com / director123</div>
+                                <div class="text-xs text-purple-600">Užklausų patvirtinimas</div>
+                            </div>
+                            <div class="p-2 bg-white rounded border">
+                                <div class="font-medium text-sm text-green-600">Darbuotojas</div>
                                 <div class="text-xs text-gray-600">employee@company.com / employee123</div>
-                                <div class="text-xs text-yellow-600">Užklausų kūrimas</div>
+                                <div class="text-xs text-green-600">Užklausų kūrimas</div>
                             </div>
                         </div>
                     </div>
@@ -62,12 +67,35 @@
 
             <!-- Dashboard -->
             <div id="dashboard-section" class="hidden">
-                <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
-                    <div id="user-info" class="text-gray-600"></div>
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
+                        <div id="user-info" class="text-gray-600"></div>
+                    </div>
+                    <button onclick="logout()" class="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-all">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Atsijungti
+                    </button>
                 </div>
                 
-                <div class="grid md:grid-cols-3 gap-4 mb-6">
+                <!-- Admin Panel -->
+                <div id="admin-panel" class="hidden mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <h3 class="text-lg font-semibold text-red-800 mb-4">
+                        <i class="fas fa-cog mr-2"></i>Administravimas
+                    </h3>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <button onclick="showUserManagement()" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700">
+                            <i class="fas fa-users mr-2"></i>Vartotojų valdymas
+                        </button>
+                        <button onclick="showReports()" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700">
+                            <i class="fas fa-chart-bar mr-2"></i>Ataskaitos
+                        </button>
+                        <button onclick="clearAllData()" class="bg-red-800 text-white py-2 px-4 rounded-md hover:bg-red-900">
+                            <i class="fas fa-trash mr-2"></i>Išvalyti duomenis
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-4 gap-4 mb-6">
                     <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-lg">
                         <div class="flex items-center justify-between">
                             <div>
@@ -88,13 +116,23 @@
                         </div>
                     </div>
                     
-                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg">
+                    <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 text-white p-4 rounded-lg">
                         <div class="flex items-center justify-between">
                             <div>
                                 <div class="text-sm opacity-75">Laukia</div>
                                 <div class="text-2xl font-bold" id="pending-count">0</div>
                             </div>
                             <i class="fas fa-clock text-2xl opacity-75"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-4 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-sm opacity-75">Atmesta</div>
+                                <div class="text-2xl font-bold" id="rejected-count">0</div>
+                            </div>
+                            <i class="fas fa-times-circle text-2xl opacity-75"></i>
                         </div>
                     </div>
                 </div>
@@ -106,16 +144,10 @@
                         <div class="text-sm opacity-75">Valdyti esamas užklausas</div>
                     </button>
                     
-                    <button onclick="showCreateForm()" class="bg-white border-2 border-green-500 text-green-600 py-4 px-6 rounded-lg hover:bg-green-50 transition-all">
+                    <button onclick="showCreateForm()" class="bg-white border-2 border-green-500 text-green-600 py-4 px-6 rounded-lg hover:bg-green-50 transition-all" id="create-btn">
                         <i class="fas fa-plus text-xl mb-2"></i>
                         <div class="font-medium">Kurti naują užklausą</div>
                         <div class="text-sm opacity-75">Pridėti naują prekių užklausą</div>
-                    </button>
-                </div>
-                
-                <div class="flex justify-center">
-                    <button onclick="logout()" class="bg-gray-600 text-white py-2 px-6 rounded-md hover:bg-gray-700 transition-all">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Atsijungti
                     </button>
                 </div>
                 
@@ -125,14 +157,47 @@
     </div>
 
     <script>
-    // Demo data storage (localStorage)
+    // Enhanced user roles and permissions
     let currentUser = null;
     let requests = JSON.parse(localStorage.getItem('demo_requests') || '[]');
-    let users = [
-        { id: 1, email: 'admin@company.com', password: 'admin123', name: 'Sistemos Administratorius', role: 'admin', department: 'IT' },
-        { id: 2, email: 'manager@company.com', password: 'manager123', name: 'Prekių Vadybininkas', role: 'manager', department: 'Pirkimai' },
-        { id: 3, email: 'employee@company.com', password: 'employee123', name: 'Prekių Specialistas', role: 'employee', department: 'Gamyba' }
-    ];
+    let users = JSON.parse(localStorage.getItem('demo_users') || JSON.stringify([
+        { 
+            id: 1, 
+            email: 'admin@company.com', 
+            password: 'admin123', 
+            name: 'Vadybininkas (Admin)', 
+            role: 'admin', 
+            department: 'Vadyba',
+            permissions: ['create', 'read', 'update', 'delete', 'approve', 'reject', 'manage_users', 'reports']
+        },
+        { 
+            id: 2, 
+            email: 'tech@company.com', 
+            password: 'tech123', 
+            name: 'Techninis Direktorius', 
+            role: 'tech_director', 
+            department: 'Techninė',
+            permissions: ['create', 'read', 'update', 'manage_requests']
+        },
+        { 
+            id: 3, 
+            email: 'director@company.com', 
+            password: 'director123', 
+            name: 'Direktorius', 
+            role: 'director', 
+            department: 'Vadyba',
+            permissions: ['read', 'approve', 'reject', 'return_for_clarification']
+        },
+        { 
+            id: 4, 
+            email: 'employee@company.com', 
+            password: 'employee123', 
+            name: 'Prekių Specialistas', 
+            role: 'employee', 
+            department: 'Pirkimai',
+            permissions: ['create', 'read', 'update_own']
+        }
+    ]));
 
     // Initialize demo data if empty
     if (requests.length === 0) {
@@ -142,7 +207,7 @@
                 title: 'Biuro reikmenų užsakymas',
                 description: 'Reikalingi biuro reikmenys: popierius, rašikliai, segtuvai',
                 status: 'pending',
-                user_id: 3,
+                user_id: 4,
                 created_at: new Date(Date.now() - 86400000).toISOString(),
                 items: [
                     { product: 'A4 popierius', quantity: 10, unit_price: 5.99, total_price: 59.90 },
@@ -164,16 +229,32 @@
                 id: 3,
                 title: 'Virtuvės įranga',
                 description: 'Kavos aparatas ir mikrobanginė krosnelė personalui',
-                status: 'draft',
+                status: 'clarification_needed',
                 user_id: 2,
                 created_at: new Date().toISOString(),
                 items: [
                     { product: 'Kavos aparatas', quantity: 1, unit_price: 299.99, total_price: 299.99 },
                     { product: 'Mikrobanginė krosnelė', quantity: 1, unit_price: 149.99, total_price: 149.99 }
                 ]
+            },
+            {
+                id: 4,
+                title: 'Užklausa atmetimui',
+                description: 'Ši užklausa bus atmesta kaip pavyzdys',
+                status: 'rejected',
+                user_id: 4,
+                rejected_reason: 'Nepakankamas biudžetas šiems pirkiniams',
+                created_at: new Date(Date.now() - 259200000).toISOString(),
+                items: [
+                    { product: 'Brangus produktas', quantity: 1, unit_price: 9999.99, total_price: 9999.99 }
+                ]
             }
         ];
         localStorage.setItem('demo_requests', JSON.stringify(requests));
+    }
+
+    function hasPermission(permission) {
+        return currentUser && currentUser.permissions && currentUser.permissions.includes(permission);
     }
 
     function login() {
@@ -197,17 +278,28 @@
         
         const roleColors = {
             admin: 'text-red-600 bg-red-100',
-            manager: 'text-blue-600 bg-blue-100',
+            tech_director: 'text-blue-600 bg-blue-100',
+            director: 'text-purple-600 bg-purple-100',
             employee: 'text-green-600 bg-green-100'
         };
         
-        document.getElementById('user-info').innerHTML = `
+        document.getElementById('user-info').innerHTML = \`
             <div class="mt-2">
-                <span class="font-medium">${currentUser.name}</span> | 
-                <span class="text-sm px-2 py-1 rounded-full ${roleColors[currentUser.role]}">${currentUser.role}</span> | 
-                <span class="text-sm text-gray-500">${currentUser.department}</span>
+                <span class="font-medium">\${currentUser.name}</span> | 
+                <span class="text-sm px-2 py-1 rounded-full \${roleColors[currentUser.role]}">\${currentUser.role}</span> | 
+                <span class="text-sm text-gray-500">\${currentUser.department}</span>
             </div>
-        `;
+        \`;
+
+        // Show admin panel for admin users
+        if (hasPermission('manage_users')) {
+            document.getElementById('admin-panel').classList.remove('hidden');
+        }
+
+        // Hide create button for directors (they only approve)
+        if (currentUser.role === 'director') {
+            document.getElementById('create-btn').style.display = 'none';
+        }
     }
 
     function updateDashboardStats() {
@@ -219,10 +311,12 @@
         const totalRequests = userRequests.length;
         const approvedRequests = userRequests.filter(r => r.status === 'approved').length;
         const pendingRequests = userRequests.filter(r => r.status === 'pending').length;
+        const rejectedRequests = userRequests.filter(r => r.status === 'rejected').length;
         
         document.getElementById('request-count').textContent = totalRequests;
         document.getElementById('approved-count').textContent = approvedRequests;
         document.getElementById('pending-count').textContent = pendingRequests;
+        document.getElementById('rejected-count').textContent = rejectedRequests;
     }
 
     function showRequests() {
@@ -235,76 +329,99 @@
             draft: 'bg-gray-100 text-gray-800',
             pending: 'bg-yellow-100 text-yellow-800',
             approved: 'bg-green-100 text-green-800',
-            rejected: 'bg-red-100 text-red-800'
+            rejected: 'bg-red-100 text-red-800',
+            clarification_needed: 'bg-orange-100 text-orange-800'
+        };
+
+        const statusLabels = {
+            draft: 'Juodraštis',
+            pending: 'Laukia patvirtinimo',
+            approved: 'Patvirtinta',
+            rejected: 'Atmesta',
+            clarification_needed: 'Reikia patikslinti'
         };
         
-        const html = `
+        const html = \`
             <div class="bg-white border rounded-lg p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-semibold">Užklausos (${userRequests.length})</h3>
-                    <button onclick="showCreateForm()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-                        <i class="fas fa-plus mr-2"></i>Nauja užklausa
-                    </button>
+                    <h3 class="text-lg font-semibold">Užklausos (\${userRequests.length})</h3>
+                    \${hasPermission('create') ? \`
+                        <button onclick="showCreateForm()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                            <i class="fas fa-plus mr-2"></i>Nauja užklausa
+                        </button>
+                    \` : ''}
                 </div>
                 
-                ${userRequests.length === 0 ? 
+                \${userRequests.length === 0 ? 
                     '<div class="text-center py-8 text-gray-500"><i class="fas fa-inbox text-4xl mb-4"></i><p>Užklausų nėra</p></div>' :
                     userRequests.map(req => {
                         const user = users.find(u => u.id === req.user_id);
                         const totalValue = req.items ? req.items.reduce((sum, item) => sum + (item.total_price || 0), 0) : 0;
                         
-                        return `
+                        return \`
                             <div class="border rounded-lg p-4 mb-4 hover:shadow-md transition-shadow">
                                 <div class="flex justify-between items-start mb-3">
                                     <div>
-                                        <h4 class="font-medium text-lg">${req.title}</h4>
-                                        <p class="text-gray-600 text-sm">${req.description}</p>
+                                        <h4 class="font-medium text-lg">\${req.title}</h4>
+                                        <p class="text-gray-600 text-sm">\${req.description}</p>
+                                        \${req.rejected_reason ? \`<p class="text-red-600 text-sm mt-1"><strong>Atmetimo priežastis:</strong> \${req.rejected_reason}</p>\` : ''}
+                                        \${req.clarification_note ? \`<p class="text-orange-600 text-sm mt-1"><strong>Patikslinimo pastaba:</strong> \${req.clarification_note}</p>\` : ''}
                                     </div>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium ${statusColors[req.status]}">${req.status}</span>
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium \${statusColors[req.status]}">\${statusLabels[req.status]}</span>
                                 </div>
                                 
                                 <div class="grid md:grid-cols-3 gap-4 text-sm text-gray-600 mb-3">
-                                    <div><i class="fas fa-user mr-1"></i>Sukūrė: ${user ? user.name : 'Nežinomas'}</div>
-                                    <div><i class="fas fa-calendar mr-1"></i>Data: ${new Date(req.created_at).toLocaleDateString('lt-LT')}</div>
-                                    <div><i class="fas fa-euro-sign mr-1"></i>Suma: €${totalValue.toFixed(2)}</div>
+                                    <div><i class="fas fa-user mr-1"></i>Sukūrė: \${user ? user.name : 'Nežinomas'}</div>
+                                    <div><i class="fas fa-calendar mr-1"></i>Data: \${new Date(req.created_at).toLocaleDateString('lt-LT')}</div>
+                                    <div><i class="fas fa-euro-sign mr-1"></i>Suma: €\${totalValue.toFixed(2)}</div>
                                 </div>
                                 
-                                ${req.items && req.items.length > 0 ? `
+                                \${req.items && req.items.length > 0 ? \`
                                     <div class="bg-gray-50 rounded p-3">
-                                        <div class="text-sm font-medium mb-2">Prekės (${req.items.length}):</div>
-                                        ${req.items.map(item => `
+                                        <div class="text-sm font-medium mb-2">Prekės (\${req.items.length}):</div>
+                                        \${req.items.map(item => \`
                                             <div class="flex justify-between text-xs text-gray-600 mb-1">
-                                                <span>${item.product} × ${item.quantity}</span>
-                                                <span>€${(item.total_price || 0).toFixed(2)}</span>
+                                                <span>\${item.product} × \${item.quantity}</span>
+                                                <span>€\${(item.total_price || 0).toFixed(2)}</span>
                                             </div>
-                                        `).join('')}
+                                        \`).join('')}
                                     </div>
-                                ` : ''}
+                                \` : ''}
                                 
                                 <div class="flex justify-end mt-3 space-x-2">
-                                    ${currentUser.role !== 'employee' && req.status === 'pending' ? `
-                                        <button onclick="updateRequestStatus(${req.id}, 'approved')" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                                    \${hasPermission('approve') && req.status === 'pending' ? \`
+                                        <button onclick="updateRequestStatus(\${req.id}, 'approved')" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
                                             <i class="fas fa-check mr-1"></i>Patvirtinti
                                         </button>
-                                        <button onclick="updateRequestStatus(${req.id}, 'rejected')" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                        <button onclick="requestClarification(\${req.id})" class="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-700">
+                                            <i class="fas fa-question mr-1"></i>Grąžinti tikslinti
+                                        </button>
+                                        <button onclick="rejectRequest(\${req.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
                                             <i class="fas fa-times mr-1"></i>Atmesti
                                         </button>
-                                    ` : ''}
-                                    <button onclick="editRequest(${req.id})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
-                                        <i class="fas fa-edit mr-1"></i>Redaguoti
-                                    </button>
+                                    \` : ''}
+                                    \${hasPermission('update') || (hasPermission('update_own') && req.user_id === currentUser.id) ? \`
+                                        <button onclick="editRequest(\${req.id})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                            <i class="fas fa-edit mr-1"></i>Redaguoti
+                                        </button>
+                                    \` : ''}
+                                    \${hasPermission('delete') ? \`
+                                        <button onclick="deleteRequest(\${req.id})" class="bg-red-800 text-white px-3 py-1 rounded text-sm hover:bg-red-900">
+                                            <i class="fas fa-trash mr-1"></i>Ištrinti
+                                        </button>
+                                    \` : ''}
                                 </div>
                             </div>
-                        `;
+                        \`;
                     }).join('')
                 }
             </div>
-        `;
+        \`;
         document.getElementById('content-area').innerHTML = html;
     }
 
     function showCreateForm() {
-        const html = `
+        const html = \`
             <div class="bg-white border rounded-lg p-6">
                 <h3 class="text-lg font-semibold mb-6">Nauja prekių užklausa</h3>
                 
@@ -371,7 +488,7 @@
                     </div>
                 </div>
             </div>
-        `;
+        \`;
         document.getElementById('content-area').innerHTML = html;
     }
 
@@ -381,7 +498,7 @@
         
         const newLine = document.createElement('div');
         newLine.className = 'product-line grid grid-cols-12 gap-2 mb-3 items-end';
-        newLine.innerHTML = `
+        newLine.innerHTML = \`
             <div class="col-span-4">
                 <input type="text" class="product-name w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="Prekės pavadinimas">
             </div>
@@ -399,7 +516,7 @@
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
-        `;
+        \`;
         
         container.appendChild(newLine);
         updateRemoveButtons();
@@ -504,9 +621,56 @@
             request.status = newStatus;
             localStorage.setItem('demo_requests', JSON.stringify(requests));
             
-            alert(`Užklausa "${request.title}" ${newStatus === 'approved' ? 'patvirtinta' : 'atmesta'}!`);
+            alert(\`Užklausa "\${request.title}" \${newStatus === 'approved' ? 'patvirtinta' : 'atmesta'}!\`);
             showRequests();
             updateDashboardStats();
+        }
+    }
+
+    function requestClarification(requestId) {
+        const note = prompt('Įveskite patikslinimo pastabą:');
+        if (note && note.trim()) {
+            const request = requests.find(r => r.id === requestId);
+            if (request) {
+                request.status = 'clarification_needed';
+                request.clarification_note = note.trim();
+                localStorage.setItem('demo_requests', JSON.stringify(requests));
+                
+                alert(\`Užklausa "\${request.title}" grąžinta tikslinti!\`);
+                showRequests();
+                updateDashboardStats();
+            }
+        }
+    }
+
+    function rejectRequest(requestId) {
+        const reason = prompt('Įveskite atmetimo priežastį:');
+        if (reason && reason.trim()) {
+            const request = requests.find(r => r.id === requestId);
+            if (request) {
+                request.status = 'rejected';
+                request.rejected_reason = reason.trim();
+                localStorage.setItem('demo_requests', JSON.stringify(requests));
+                
+                alert(\`Užklausa "\${request.title}" atmesta!\`);
+                showRequests();
+                updateDashboardStats();
+            }
+        }
+    }
+
+    function deleteRequest(requestId) {
+        if (confirm('Ar tikrai norite ištrinti šią užklausą?')) {
+            const requestIndex = requests.findIndex(r => r.id === requestId);
+            if (requestIndex > -1) {
+                const request = requests[requestIndex];
+                requests.splice(requestIndex, 1);
+                localStorage.setItem('demo_requests', JSON.stringify(requests));
+                
+                alert(\`Užklausa "\${request.title}" ištrinta!\`);
+                showRequests();
+                updateDashboardStats();
+            }
         }
     }
 
@@ -514,10 +678,260 @@
         alert('Redagavimo funkcija bus pridėta ateityje');
     }
 
+    function showUserManagement() {
+        const html = \`
+            <div class="bg-white border rounded-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold">Vartotojų valdymas</h3>
+                    <button onclick="showAddUserForm()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                        <i class="fas fa-plus mr-2"></i>Pridėti vartotoją
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    \${users.map(user => \`
+                        <div class="border rounded-lg p-4 flex justify-between items-center">
+                            <div>
+                                <div class="font-medium">\${user.name}</div>
+                                <div class="text-sm text-gray-600">\${user.email} | \${user.role} | \${user.department}</div>
+                                <div class="text-xs text-gray-500">Teisės: \${user.permissions.join(', ')}</div>
+                            </div>
+                            <div class="space-x-2">
+                                <button onclick="editUser(\${user.id})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                    <i class="fas fa-edit mr-1"></i>Redaguoti
+                                </button>
+                                \${user.id !== 1 ? \`
+                                    <button onclick="deleteUser(\${user.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                        <i class="fas fa-trash mr-1"></i>Ištrinti
+                                    </button>
+                                \` : ''}
+                            </div>
+                        </div>
+                    \`).join('')}
+                </div>
+            </div>
+        \`;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    function showAddUserForm() {
+        const html = \`
+            <div class="bg-white border rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-6">Pridėti naują vartotoją</h3>
+                
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Vardas</label>
+                            <input id="new-user-name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Vardas Pavardė">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">El. paštas</label>
+                            <input id="new-user-email" type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="vardas@company.com">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Slaptažodis</label>
+                            <input id="new-user-password" type="password" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="slaptažodis">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Rolė</label>
+                            <select id="new-user-role" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="employee">Darbuotojas</option>
+                                <option value="tech_director">Techninis direktorius</option>
+                                <option value="director">Direktorius</option>
+                                <option value="admin">Administratorius</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Skyrius</label>
+                            <input id="new-user-department" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Pirkimai">
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3 pt-4">
+                        <button onclick="addUser()" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                            <i class="fas fa-save mr-2"></i>Išsaugoti vartotoją
+                        </button>
+                        <button onclick="showUserManagement()" class="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700">
+                            Atšaukti
+                        </button>
+                    </div>
+                </div>
+            </div>
+        \`;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    function addUser() {
+        const name = document.getElementById('new-user-name').value.trim();
+        const email = document.getElementById('new-user-email').value.trim();
+        const password = document.getElementById('new-user-password').value.trim();
+        const role = document.getElementById('new-user-role').value;
+        const department = document.getElementById('new-user-department').value.trim();
+        
+        if (!name || !email || !password || !department) {
+            alert('Prašome užpildyti visus laukus');
+            return;
+        }
+        
+        // Check if email already exists
+        if (users.find(u => u.email === email)) {
+            alert('Vartotojas su tokiu el. paštu jau egzistuoja');
+            return;
+        }
+        
+        // Set permissions based on role
+        let permissions = [];
+        switch (role) {
+            case 'admin':
+                permissions = ['create', 'read', 'update', 'delete', 'approve', 'reject', 'manage_users', 'reports'];
+                break;
+            case 'tech_director':
+                permissions = ['create', 'read', 'update', 'manage_requests'];
+                break;
+            case 'director':
+                permissions = ['read', 'approve', 'reject', 'return_for_clarification'];
+                break;
+            case 'employee':
+                permissions = ['create', 'read', 'update_own'];
+                break;
+        }
+        
+        const newUser = {
+            id: Math.max(...users.map(u => u.id), 0) + 1,
+            email: email,
+            password: password,
+            name: name,
+            role: role,
+            department: department,
+            permissions: permissions
+        };
+        
+        users.push(newUser);
+        localStorage.setItem('demo_users', JSON.stringify(users));
+        
+        alert(\`Vartotojas "\${name}" sėkmingai pridėtas!\`);
+        showUserManagement();
+    }
+
+    function deleteUser(userId) {
+        if (userId === 1) {
+            alert('Negalima ištrinti pagrindinio administratoriaus');
+            return;
+        }
+        
+        if (confirm('Ar tikrai norite ištrinti šį vartotoją?')) {
+            const userIndex = users.findIndex(u => u.id === userId);
+            if (userIndex > -1) {
+                const user = users[userIndex];
+                users.splice(userIndex, 1);
+                localStorage.setItem('demo_users', JSON.stringify(users));
+                
+                alert(\`Vartotojas "\${user.name}" ištrintas!\`);
+                showUserManagement();
+            }
+        }
+    }
+
+    function editUser(userId) {
+        alert('Vartotojo redagavimo funkcija bus pridėta ateityje');
+    }
+
+    function showReports() {
+        const totalRequests = requests.length;
+        const approvedRequests = requests.filter(r => r.status === 'approved').length;
+        const pendingRequests = requests.filter(r => r.status === 'pending').length;
+        const rejectedRequests = requests.filter(r => r.status === 'rejected').length;
+        const totalValue = requests.reduce((sum, req) => {
+            const reqValue = req.items ? req.items.reduce((itemSum, item) => itemSum + (item.total_price || 0), 0) : 0;
+            return sum + reqValue;
+        }, 0);
+        
+        const html = \`
+            <div class="bg-white border rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-6">Sistemos ataskaitos</h3>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-medium text-blue-800 mb-3">Užklausų statistikos</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Iš viso užklausų:</span>
+                                <span class="font-medium">\${totalRequests}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Patvirtinta:</span>
+                                <span class="font-medium text-green-600">\${approvedRequests}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Laukia patvirtinimo:</span>
+                                <span class="font-medium text-yellow-600">\${pendingRequests}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Atmesta:</span>
+                                <span class="font-medium text-red-600">\${rejectedRequests}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="font-medium text-green-800 mb-3">Finansinė ataskaita</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Bendra vertė:</span>
+                                <span class="font-medium">€\${totalValue.toFixed(2)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Patvirtintų vertė:</span>
+                                <span class="font-medium text-green-600">€\${requests.filter(r => r.status === 'approved').reduce((sum, req) => sum + (req.items || []).reduce((itemSum, item) => itemSum + (item.total_price || 0), 0), 0).toFixed(2)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Vidutinė užklausos vertė:</span>
+                                <span class="font-medium">€\${totalRequests > 0 ? (totalValue / totalRequests).toFixed(2) : '0.00'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h4 class="font-medium mb-3">Vartotojų aktyvumas</h4>
+                    <div class="space-y-2">
+                        \${users.map(user => {
+                            const userRequestCount = requests.filter(r => r.user_id === user.id).length;
+                            return \`
+                                <div class="flex justify-between items-center py-2 border-b">
+                                    <span>\${user.name} (\${user.role})</span>
+                                    <span class="text-sm text-gray-600">\${userRequestCount} užklausų</span>
+                                </div>
+                            \`;
+                        }).join('')}
+                    </div>
+                </div>
+            </div>
+        \`;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    function clearAllData() {
+        if (confirm('DĖMESIO! Šis veiksmas ištrins visus duomenis (išskyrus vartotojus). Ar tikrai norite tęsti?')) {
+            if (confirm('Paskutinis patvirtinimas - visi užklausų duomenys bus prarasti!')) {
+                requests = [];
+                localStorage.setItem('demo_requests', JSON.stringify(requests));
+                alert('Visi užklausų duomenys išvalyti!');
+                updateDashboardStats();
+                showRequests();
+            }
+        }
+    }
+
     function logout() {
         currentUser = null;
         document.getElementById('login-section').classList.remove('hidden');
         document.getElementById('dashboard-section').classList.add('hidden');
+        document.getElementById('admin-panel').classList.add('hidden');
         document.getElementById('content-area').innerHTML = '';
         
         // Reset form
@@ -527,9 +941,6 @@
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
-        // Auto-login for demo (remove in production)
-        // login();
-        
         // Enter key support
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !document.getElementById('login-section').classList.contains('hidden')) {

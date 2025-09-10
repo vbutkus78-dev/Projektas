@@ -1,247 +1,216 @@
-# Procurement Management System (PMS)
+# Įmonės pirkimų valdymo sistema (Enterprise Procurement Management System)
 
-## Project Overview
-- **Name**: Procurement Management System
-- **Goal**: Comprehensive procurement workflow management with role-based access control
-- **Type**: **Production-Ready System** (not a test version)
-- **Tech Stack**: Hono + TypeScript + Cloudflare D1 + TailwindCSS + SendGrid
+## Projekto apžvalga
+- **Pavadinimas**: Įmonės pirkimų valdymo sistema
+- **Tikslas**: Visapusiškas įmonės prekių užsakymų ir pirkimų valdymas su 6-etapų darbo eiga
+- **Tipas**: Išplėstinė verslo valdymo sistema su enterprise funkcionalumu
 
-## URLs
-- **Local Development**: http://localhost:3000
-- **GitHub**: Repository configured for production deployment
-- **Production**: Ready for deployment to serveriai.lt or Cloudflare Pages
+## Pagrindinės funkcijos
 
-## Completed Features ✅
+### ✅ Užbaigtos funkcijos
 
-### Core Procurement System
-1. **Request Management**
-   - Create, edit, view, and manage procurement requests
-   - Multi-product order support with dynamic line addition/removal
-   - **NEW**: Remove incorrectly entered product lines (removeRequestLine functionality)
-   - Automatic request numbering and status tracking
-   - File attachments with Cloudflare R2 storage
+#### 1. Išplėstinė užsakymų darbo eiga (6 statusai)
+- **Juodraštis** → **Pateiktas tvirtinti** → **Patvirtintas (direktoriaus)** → **Užsakytas tiekėjui** → **Pristatytas/išdalintas** → **Užbaigtas**
+- Papildomi statusai: Atmestas, Grąžintas pataisymui, Atšauktas
+- Automatinis statusų valdymas su autorizacijos kontrole
+- Sistemos komentarų generavimas statusų keitimo metu
 
-2. **Workflow Management**
-   - 5-stage approval workflow: Draft → Pending → Approved → Ordered → Completed
-   - Role-based approvals and status transitions
-   - Automatic email notifications at each stage
+#### 2. Išplėstinis produktų valdymas
+- **SKU sistema**: Unikalūs produktų kodai
+- **Tiekėjų susietas**: Kiekvienas produktas susietas su tiekėju
+- **Kainodara su nuolaidomis**: Bazinė kaina + nuolaidos sistema
+- **PVM skaičiavimas**: Automatinis PVM pridėjimas (21% standartiškai)
+- **Minimūs kiekiai**: Minimalių užsakymo kiekių kontrolė
+- **Kategorijų sistema**: Produktų grupavimas pagal kategorijas
 
-3. **Invoice Management**
-   - Link invoices to approved requests
-   - Invoice approval workflow
-   - Payment tracking and notifications
+#### 3. Komentarų sistema su audito sekimu
+- Chronologinis komentarų išdėstymas (naujausi viršuje)
+- Komentarų tipai: bendri, skubūs, sistemos
+- Automatinis vartotojų sekimas su laiko žymėmis
+- Integruota su užsakymų peržiūros langais
 
-4. **Reporting System**
-   - 5 comprehensive report types:
-     - Requests Report (all procurement requests)
-     - Orders Report (approved/ordered items)
-     - Invoices Report (financial tracking) 
-     - Products Report (product analysis)
-     - Users Report (user activity)
-   - CSV and Excel (TSV) export functionality
-   - Role-based report access control
+#### 4. Direktoriaus valdymo skydas
+- **Reikalaujantys dėmesio**: Laukiantys patvirtinimo užsakymai
+- **Prioritetų analizė**: Aukšto prioriteto ir vėluojančių užsakymų išskyrimas
+- **Finansinė apžvalga**: Bendros sumos, patvirtintos vertės, laukiančios sprendimo
+- **Skyrių aktyvumas**: Užsakymų ir sumų pasiskirstymas pagal skyrius
+- **Greiti veiksmai**: Vieno paspaudimo patvirtinimas/atmetimas
 
-5. **Email Notification System**
-   - SendGrid integration with HTML templates
-   - Automated notifications for:
-     - Request status changes
-     - Order updates and approvals
-     - Invoice payments and reminders
-     - Welcome emails for new users
+#### 5. Išplėstinės ataskaitos su eksportu
+- **PDF eksportavimas**: HTML formato ataskaitos (su jsPDF galimybe)
+- **Excel eksportavimas**: CSV formatas, atveriamas Excel programoje
+- **Laikotarpių filtrai**: Šiandien, savaitė, mėnuo, ketvirtis, metai
+- **Greitos ataskaitos**: Laukiantys patvirtinimo, aukštos vertės užsakymai, mėnesio suvestinė
+- **Parametrizuotos ataskaitos**: Statusų, skyrių, laikotarpių filtravimas
 
-### Authentication & Authorization
-- JWT-based authentication with Web Crypto API
-- Role-Based Access Control (RBAC) with 5 user roles:
-  - **Employee**: Create and view own requests
-  - **Manager**: Approve department requests
-  - **Supervisor**: Oversee multiple departments
-  - **Accounting**: Handle invoices and payments
-  - **Admin**: Full system access and user management
+#### 6. Tiekėjų valdymo sistema
+- **CRUD operacijos**: Pilnas tiekėjų kūrimas, redagavimas, trinimas
+- **Kontaktinė informacija**: Vardas, el. paštas, telefonas, adresas
+- **PVM duomenys**: PVM kodai ir mokėjimo terminai
+- **Kategorijos**: Tiekėjų grupavimas pagal specialybę
+- **Paieškos funkcija**: Greitas tiekėjų filtravimas
 
-### User Interface
-- Modern responsive SPA with TailwindCSS
-- Real-time form validation and error handling
-- Dynamic product line management with add/remove functionality
-- File upload with progress indicators
-- Export functionality for all reports
+#### 7. Audito žurnalo sistema
+- **Visų veiksmų sekimas**: Kiekvienas veiksmas įrašomas į auditą
+- **Vartotojų identifikavimas**: Kas, kada ir ką darė
+- **Detalūs įrašai**: Seni ir nauji duomenys, priežastys
+- **Sisteminis sekimas**: IP adresai, naršyklės duomenys
 
-## Data Architecture
+#### 8. Atnaujinta rolių sistema
+- **Administratorius**: Pilna prieiga prie visų funkcijų
+- **Techninis direktorius**: Užsakymų valdymas, produktų valdymas
+- **Direktorius**: Užsakymų patvirtinimas, direktoriaus skydas
+- **Darbuotojas**: Užsakymų kūrimas ir redagavimas (tik savų)
 
-### Storage Services
-- **Cloudflare D1**: SQLite database for all relational data
-- **Cloudflare R2**: Object storage for file attachments
-- **Local Development**: Automatic local SQLite with `--local` flag
+### ⏳ Planuojamos funkcijos
 
-### Database Schema
-```sql
--- Users with role-based permissions
-users: id, email, name, role, department, status, created_at
+#### 9. Dokumentų priedų sistema
+- Proforma sąskaitų pridėjimas
+- Originalių sąskaitų saugojimas
+- Antivirusinė failų patikra
+- Failų dydžio apribojimai
 
--- Procurement requests with full lifecycle
-requests: id, title, description, status, user_id, approved_by, created_at, updated_at
+## URLs ir prieiga
+- **Demo sistema**: https://3000-i1qoik2ucaytcjarkeljq-6532622b.e2b.dev/
+- **GitHub repozitorija**: /home/user/webapp/
 
--- Individual product items in requests
-request_items: id, request_id, product, quantity, unit_price, total_price, notes
+## Duomenų architektūra
 
--- Invoice management and payments
-invoices: id, request_id, invoice_number, amount, status, due_date, created_at
+### Pagrindiniai duomenų modeliai
+- **orders**: Užsakymai su 6-etapų darbo eiga
+- **products**: Produktų katalogas su SKU, kainomis, PVM
+- **suppliers**: Tiekėjų valdymas su kontaktine informacija
+- **comments**: Komentarų sistema su tipais ir laiko žymėmis
+- **attachments**: Dokumentų priedų sistema (planuojama)
+- **auditLog**: Visų sistemos veiksmų auditas
 
--- File attachments with R2 integration
-attachments: id, request_id, filename, file_key, file_size, content_type, uploaded_at
+### Saugojimo sistema
+- **LocalStorage**: Visi duomenys saugomi naršyklės localStorage
+- **Raktų schema**: `procurement_*` prefiksai visoms kolekcijoms
+- **Duomenų inicijavimas**: Automatinis demo duomenų sukūrimas
+- **Backup funkcija**: Duomenų išvalymo kontrolė
+
+## Vartotojų vadovas
+
+### Prisijungimas prie sistemos
+1. Atidarykite demo svetainę
+2. Pasirinkite vartotoją iš greitojo prisijungimo mygtukai
+3. Arba įveskite duomenis rankiniu būdu
+
+### Demo vartotojai:
+- 🔴 **admin@company.com / admin123** - Vadybininkas (pilna prieiga)
+- 🟣 **director@company.com / director123** - Direktorius (patvirtinimai)
+- 🔵 **tech@company.com / tech123** - Techninis direktorius (valdymas)
+- 🟢 **employee@company.com / employee123** - Darbuotojas (užsakymai)
+
+### Pagrindiniai darbo procesai
+
+#### Naujo užsakymo kūrimas
+1. Prisijunkite kaip darbuotojas arba tech. direktorius
+2. Spustelėkite "Naujas užsakymas"
+3. Užpildykite užsakymo informaciją
+4. Pridėkite produktus iš katalogo
+5. Išsaugokite kaip juodraštį arba pateikite tvirtinti
+
+#### Užsakymo patvirtinimas (direktoriams)
+1. Prisijunkite kaip direktorius
+2. Eikite į "Direktoriaus dashboard"
+3. Peržiūrėkite laukiančius užsakymus
+4. Spustelėkite "Patvirtinti" arba "Atmesti"
+5. Užsakymas pereina į kitą etapą
+
+#### Ataskaitų generavimas
+1. Eikite į "Ataskaitos" skyrių
+2. Pasirinkite laikotarpį ir filtrus
+3. Spustelėkite "Generuoti ataskaitą"
+4. Eksportuokite PDF arba Excel formatu
+
+## Diegimo informacija
+- **Platforma**: Netlify statinis hosting
+- **Statusas**: ✅ Aktyvus ir veikiantis
+- **Technologijų stack**: 
+  - Frontend: Vanilla JavaScript + TailwindCSS
+  - Duomenų saugojimas: Browser localStorage
+  - Autentifikacija: Demo vartotojai
+  - Eksportavimas: CSV/HTML generavimas
+
+## Sistemos architektūra
+
+### Frontend technologijos
+- **TailwindCSS**: Utility-first CSS framework stilizavimui
+- **FontAwesome**: Ikonų sistema
+- **Vanilla JavaScript**: Grynasis JavaScript be papildomų framework'ų
+- **localStorage API**: Duomenų saugojimas naršyklėje
+
+### Duomenų struktūros
+```javascript
+// Užsakymo objekto pavyzdys
+{
+  id: 1,
+  order_number: 'ORD-2024-001',
+  title: 'Biuro reikmenų užsakymas',
+  status: 'submitted',
+  priority: 'medium',
+  user_id: 4,
+  department: 'Pirkimai',
+  totals: {
+    net_amount: 88.40,
+    vat_amount: 18.57,
+    total_amount: 106.97
+  },
+  items: [...], // Užsakymo prekės
+  created_at: '2024-01-15T08:00:00.000Z'
+}
 ```
 
-## Current Functional APIs
+## Pagrindinės sistemos funkcijos
 
-### Authentication
-- `POST /api/auth/login` - User authentication
-- `POST /api/auth/logout` - Session termination
-- `GET /api/auth/me` - Current user info
+### 1. Užsakymų valdymas
+- 6-etapų darbo eiga su statusų kontrole
+- Automatinis užsakymų numerių generavimas
+- Prekių pridėjimas iš produktų katalogo
+- VAT ir nuolaidų skaičiavimai
 
-### Request Management
-- `GET /api/requests` - List requests (role-filtered)
-- `POST /api/requests` - Create new request
-- `GET /api/requests/:id` - Get request details
-- `PUT /api/requests/:id` - Update request
-- `PUT /api/requests/:id/status` - Change request status
-- `DELETE /api/requests/:id` - Delete request (admin only)
+### 2. Produktų katalogas
+- SKU sistema unikalių kodų generavimui
+- Tiekėjų susietas su kainomis
+- Kategorijų valdymas
+- Paieškos ir filtravimo galimybės
 
-### Product Management
-- `POST /api/requests/:id/items` - Add product to request
-- `PUT /api/requests/:id/items/:itemId` - Update product
-- `DELETE /api/requests/:id/items/:itemId` - Remove product
+### 3. Tiekėjų sistema
+- Pilnas CRUD funkcionalumas
+- Kontaktinės informacijos valdymas
+- PVM duomenų saugojimas
+- Mokėjimo terminų nustatymas
 
-### Invoice Management
-- `GET /api/invoices` - List invoices (role-filtered)
-- `POST /api/invoices` - Create invoice
-- `PUT /api/invoices/:id/status` - Update payment status
+### 4. Rolių ir teisių valdymas
+- 4 vartotojų rolės su skirtingomis teisėmis
+- Dinamiškas meniu ir funkcijų rodimas
+- Saugus duomenų prieigos kontrolė
 
-### File Management
-- `POST /api/requests/:id/attachments` - Upload file
-- `GET /api/requests/:id/attachments/:id` - Download file
-- `DELETE /api/requests/:id/attachments/:id` - Delete file
+### 5. Ataskaitų sistema
+- Parametrizuojamos ataskaitos su filtrais
+- PDF ir Excel eksportavimas
+- Greitos ataskaitos su vienu paspaudimu
+- Finansinių duomenų analizė
 
-### Reports & Analytics
-- `GET /api/reports/requests` - Requests report
-- `GET /api/reports/orders` - Orders report  
-- `GET /api/reports/invoices` - Invoices report
-- `GET /api/reports/products` - Products analysis
-- `GET /api/reports/users` - Users activity
+## Saugumo aspektai
+- Vartotojų autentifikacija su demo sistemoje
+- Rolių pagrindu veikiantis prieigos kontrolė
+- Audito žurnalo vedimas visų veiksmų
+- Duomenų validavimas frontend pusėje
 
-### User Management (Admin)
-- `GET /api/admin/users` - List all users
-- `POST /api/admin/users` - Create user
-- `PUT /api/admin/users/:id` - Update user
-- `PUT /api/admin/users/:id/status` - Activate/deactivate user
+## Plėtros galimybės
+1. **Realaus backend integravimas**: API serveris su duomenų baze
+2. **LDAP/Active Directory integracija**: Tikra vartotojų autentifikacija
+3. **El. laiškų pranešimai**: Automatiniai statusų keitimo pranešimai
+4. **Mobiliosios aplikacijos versija**: React Native arba PWA
+5. **Dokumentų valdymo sistema**: Failų įkėlimas ir saugojimas
+6. **Integracijos su ERP**: SAP, Oracle, Microsoft Dynamics
+7. **Multi-tenant architektūra**: Kelių įmonių palaikymas
 
-## User Guide
+---
 
-### For Employees
-1. Login with your credentials
-2. Click "New Request" to create procurement request
-3. Fill in request details and add products (use + button to add more lines)
-4. **NEW**: Use ✕ button to remove incorrectly entered product lines
-5. Upload supporting documents if needed
-6. Submit for approval
-7. Track request status in "My Requests"
-
-### For Managers  
-1. Review pending requests in your department
-2. Approve or reject requests with comments
-3. View department reports and analytics
-4. Manage team requests and budgets
-
-### For Accounting
-1. Process approved requests as invoices
-2. Track payments and due dates
-3. Generate financial reports
-4. Send payment reminders
-
-### For Admins
-1. Manage all users and roles
-2. Access comprehensive system reports
-3. Configure system settings
-4. Monitor system activity
-
-## Production Deployment
-
-### Option 1: serveriai.lt (Recommended)
-- **Complete guide**: See `DEPLOYMENT.md` for step-by-step instructions
-- **Server requirements**: Node.js 18+, PM2, Nginx, SSL certificate
-- **Database**: Uses local SQLite with D1-compatible schema
-- **Estimated setup time**: 2-3 hours including SSL configuration
-
-### Option 2: Cloudflare Pages
-- **Platform**: Cloudflare Pages with Workers
-- **Database**: Full Cloudflare D1 integration
-- **Storage**: Cloudflare R2 for file attachments
-- **Estimated setup time**: 30 minutes
-
-## Environment Configuration
-
-### Required Environment Variables
-```bash
-# Email service (SendGrid)
-SENDGRID_API_KEY=your-sendgrid-api-key
-FROM_EMAIL=noreply@yourcompany.com
-
-# JWT Authentication
-JWT_SECRET=your-secure-jwt-secret
-
-# Database (production)
-DATABASE_URL=path-to-production-database
-```
-
-### Development Setup
-```bash
-# Install dependencies
-npm install
-
-# Setup local database
-npm run db:migrate:local
-npm run db:seed
-
-# Start development server
-npm run dev:d1
-```
-
-## Security Features
-- JWT authentication with secure token handling
-- Role-based access control (RBAC)
-- Input validation and sanitization
-- File upload security with type checking
-- SQL injection prevention with prepared statements
-- CORS protection and secure headers
-
-## Performance Features
-- Cloudflare edge deployment for global performance
-- Optimized database queries with proper indexing
-- Lazy loading for large datasets
-- Efficient file storage with R2 CDN
-- Minimal JavaScript bundle size
-
-## Deployment Status
-- ✅ **Production Ready**: All features implemented and tested
-- ✅ **Database**: D1 schema complete with migrations
-- ✅ **Authentication**: JWT system fully functional
-- ✅ **Email**: SendGrid integration active
-- ✅ **Reports**: All 5 report types implemented
-- ✅ **File Storage**: R2 integration complete
-- ✅ **Frontend**: Responsive SPA with full functionality
-- ✅ **Documentation**: Complete deployment guide available
-
-## Next Recommended Steps
-1. **Deploy to Production**: Follow DEPLOYMENT.md guide for serveriai.lt
-2. **Configure Email**: Set up SendGrid API key and email templates
-3. **Add Users**: Create initial user accounts with appropriate roles
-4. **Customize**: Adjust company branding and specific business rules
-5. **Monitor**: Set up logging and monitoring systems
-6. **Backup**: Implement regular database backup procedures
-
-## Support & Maintenance
-- **Database**: Regular backup and maintenance procedures included
-- **Updates**: Follow semantic versioning for system updates
-- **Monitoring**: Built-in health checks and error logging
-- **Documentation**: Complete API documentation and user guides
-
-**Last Updated**: 2025-09-06
-**Version**: 1.0.0 (Production Release)
+**Paskutinis atnaujinimas**: 2024-01-15
+**Versija**: Enterprise v2.0
+**Būsena**: Pilnai funkcionali demo sistema su išplėstinėmis verslo funkcijomis

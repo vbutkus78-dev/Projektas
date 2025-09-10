@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prekių užsakymų valdymas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="max-w-2xl w-full bg-white rounded-lg shadow-md p-8">
+            <!-- Login Form -->
+            <div id="login-section">
+                <div class="text-center mb-8">
+                    <div class="mx-auto w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-shopping-cart text-white text-2xl"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold text-gray-800">Prekių užsakymų valdymas</h1>
+                    <p class="text-gray-600">Prisijunkite prie sistemos</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">El. paštas</label>
+                            <input id="email" type="email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="admin@company.com" value="admin@company.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Slaptažodis</label>
+                            <input id="password" type="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="admin123" value="admin123">
+                        </div>
+                        <button onclick="login()" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-md hover:from-blue-700 hover:to-purple-700 transition-all">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Prisijungti
+                        </button>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-md">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Demo vartotojai:</h4>
+                        <div class="space-y-2">
+                            <div class="p-2 bg-white rounded border">
+                                <div class="font-medium text-sm">Administrator</div>
+                                <div class="text-xs text-gray-600">admin@company.com / admin123</div>
+                                <div class="text-xs text-blue-600">Pilna sistemos prieiga</div>
+                            </div>
+                            <div class="p-2 bg-white rounded border">
+                                <div class="font-medium text-sm">Vadybininkas</div>
+                                <div class="text-xs text-gray-600">manager@company.com / manager123</div>
+                                <div class="text-xs text-green-600">Užklausų valdymas</div>
+                            </div>
+                            <div class="p-2 bg-white rounded border">
+                                <div class="font-medium text-sm">Darbuotojas</div>
+                                <div class="text-xs text-gray-600">employee@company.com / employee123</div>
+                                <div class="text-xs text-yellow-600">Užklausų kūrimas</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard -->
+            <div id="dashboard-section" class="hidden">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
+                    <div id="user-info" class="text-gray-600"></div>
+                </div>
+                
+                <div class="grid md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-sm opacity-75">Užklausos</div>
+                                <div class="text-2xl font-bold" id="request-count">0</div>
+                            </div>
+                            <i class="fas fa-list text-2xl opacity-75"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-sm opacity-75">Patvirtinta</div>
+                                <div class="text-2xl font-bold" id="approved-count">0</div>
+                            </div>
+                            <i class="fas fa-check-circle text-2xl opacity-75"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-sm opacity-75">Laukia</div>
+                                <div class="text-2xl font-bold" id="pending-count">0</div>
+                            </div>
+                            <i class="fas fa-clock text-2xl opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-4 mb-6">
+                    <button onclick="showRequests()" class="bg-white border-2 border-blue-500 text-blue-600 py-4 px-6 rounded-lg hover:bg-blue-50 transition-all">
+                        <i class="fas fa-list text-xl mb-2"></i>
+                        <div class="font-medium">Peržiūrėti užklausas</div>
+                        <div class="text-sm opacity-75">Valdyti esamas užklausas</div>
+                    </button>
+                    
+                    <button onclick="showCreateForm()" class="bg-white border-2 border-green-500 text-green-600 py-4 px-6 rounded-lg hover:bg-green-50 transition-all">
+                        <i class="fas fa-plus text-xl mb-2"></i>
+                        <div class="font-medium">Kurti naują užklausą</div>
+                        <div class="text-sm opacity-75">Pridėti naują prekių užklausą</div>
+                    </button>
+                </div>
+                
+                <div class="flex justify-center">
+                    <button onclick="logout()" class="bg-gray-600 text-white py-2 px-6 rounded-md hover:bg-gray-700 transition-all">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Atsijungti
+                    </button>
+                </div>
+                
+                <div id="content-area" class="mt-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Demo data storage (localStorage)
+    let currentUser = null;
+    let requests = JSON.parse(localStorage.getItem('demo_requests') || '[]');
+    let users = [
+        { id: 1, email: 'admin@company.com', password: 'admin123', name: 'Sistemos Administratorius', role: 'admin', department: 'IT' },
+        { id: 2, email: 'manager@company.com', password: 'manager123', name: 'Prekių Vadybininkas', role: 'manager', department: 'Pirkimai' },
+        { id: 3, email: 'employee@company.com', password: 'employee123', name: 'Prekių Specialistas', role: 'employee', department: 'Gamyba' }
+    ];
+
+    // Initialize demo data if empty
+    if (requests.length === 0) {
+        requests = [
+            {
+                id: 1,
+                title: 'Biuro reikmenų užsakymas',
+                description: 'Reikalingi biuro reikmenys: popierius, rašikliai, segtuvai',
+                status: 'pending',
+                user_id: 3,
+                created_at: new Date(Date.now() - 86400000).toISOString(),
+                items: [
+                    { product: 'A4 popierius', quantity: 10, unit_price: 5.99, total_price: 59.90 },
+                    { product: 'Rašikliai (mėlyni)', quantity: 20, unit_price: 1.50, total_price: 30.00 }
+                ]
+            },
+            {
+                id: 2,
+                title: 'IT įrangos atnaujinimas',
+                description: 'Reikalingi nauji kompiuteriai darbuotojams',
+                status: 'approved',
+                user_id: 1,
+                created_at: new Date(Date.now() - 172800000).toISOString(),
+                items: [
+                    { product: 'Laptop Dell', quantity: 3, unit_price: 899.99, total_price: 2699.97 }
+                ]
+            },
+            {
+                id: 3,
+                title: 'Virtuvės įranga',
+                description: 'Kavos aparatas ir mikrobanginė krosnelė personalui',
+                status: 'draft',
+                user_id: 2,
+                created_at: new Date().toISOString(),
+                items: [
+                    { product: 'Kavos aparatas', quantity: 1, unit_price: 299.99, total_price: 299.99 },
+                    { product: 'Mikrobanginė krosnelė', quantity: 1, unit_price: 149.99, total_price: 149.99 }
+                ]
+            }
+        ];
+        localStorage.setItem('demo_requests', JSON.stringify(requests));
+    }
+
+    function login() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        
+        const user = users.find(u => u.email === email && u.password === password);
+        
+        if (user) {
+            currentUser = user;
+            showDashboard();
+            updateDashboardStats();
+        } else {
+            alert('Neteisingi prisijungimo duomenys');
+        }
+    }
+
+    function showDashboard() {
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('dashboard-section').classList.remove('hidden');
+        
+        const roleColors = {
+            admin: 'text-red-600 bg-red-100',
+            manager: 'text-blue-600 bg-blue-100',
+            employee: 'text-green-600 bg-green-100'
+        };
+        
+        document.getElementById('user-info').innerHTML = `
+            <div class="mt-2">
+                <span class="font-medium">${currentUser.name}</span> | 
+                <span class="text-sm px-2 py-1 rounded-full ${roleColors[currentUser.role]}">${currentUser.role}</span> | 
+                <span class="text-sm text-gray-500">${currentUser.department}</span>
+            </div>
+        `;
+    }
+
+    function updateDashboardStats() {
+        let userRequests = requests;
+        if (currentUser.role === 'employee') {
+            userRequests = requests.filter(r => r.user_id === currentUser.id);
+        }
+        
+        const totalRequests = userRequests.length;
+        const approvedRequests = userRequests.filter(r => r.status === 'approved').length;
+        const pendingRequests = userRequests.filter(r => r.status === 'pending').length;
+        
+        document.getElementById('request-count').textContent = totalRequests;
+        document.getElementById('approved-count').textContent = approvedRequests;
+        document.getElementById('pending-count').textContent = pendingRequests;
+    }
+
+    function showRequests() {
+        let userRequests = requests;
+        if (currentUser.role === 'employee') {
+            userRequests = requests.filter(r => r.user_id === currentUser.id);
+        }
+
+        const statusColors = {
+            draft: 'bg-gray-100 text-gray-800',
+            pending: 'bg-yellow-100 text-yellow-800',
+            approved: 'bg-green-100 text-green-800',
+            rejected: 'bg-red-100 text-red-800'
+        };
+        
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold">Užklausos (${userRequests.length})</h3>
+                    <button onclick="showCreateForm()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                        <i class="fas fa-plus mr-2"></i>Nauja užklausa
+                    </button>
+                </div>
+                
+                ${userRequests.length === 0 ? 
+                    '<div class="text-center py-8 text-gray-500"><i class="fas fa-inbox text-4xl mb-4"></i><p>Užklausų nėra</p></div>' :
+                    userRequests.map(req => {
+                        const user = users.find(u => u.id === req.user_id);
+                        const totalValue = req.items ? req.items.reduce((sum, item) => sum + (item.total_price || 0), 0) : 0;
+                        
+                        return `
+                            <div class="border rounded-lg p-4 mb-4 hover:shadow-md transition-shadow">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-medium text-lg">${req.title}</h4>
+                                        <p class="text-gray-600 text-sm">${req.description}</p>
+                                    </div>
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium ${statusColors[req.status]}">${req.status}</span>
+                                </div>
+                                
+                                <div class="grid md:grid-cols-3 gap-4 text-sm text-gray-600 mb-3">
+                                    <div><i class="fas fa-user mr-1"></i>Sukūrė: ${user ? user.name : 'Nežinomas'}</div>
+                                    <div><i class="fas fa-calendar mr-1"></i>Data: ${new Date(req.created_at).toLocaleDateString('lt-LT')}</div>
+                                    <div><i class="fas fa-euro-sign mr-1"></i>Suma: €${totalValue.toFixed(2)}</div>
+                                </div>
+                                
+                                ${req.items && req.items.length > 0 ? `
+                                    <div class="bg-gray-50 rounded p-3">
+                                        <div class="text-sm font-medium mb-2">Prekės (${req.items.length}):</div>
+                                        ${req.items.map(item => `
+                                            <div class="flex justify-between text-xs text-gray-600 mb-1">
+                                                <span>${item.product} × ${item.quantity}</span>
+                                                <span>€${(item.total_price || 0).toFixed(2)}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                                
+                                <div class="flex justify-end mt-3 space-x-2">
+                                    ${currentUser.role !== 'employee' && req.status === 'pending' ? `
+                                        <button onclick="updateRequestStatus(${req.id}, 'approved')" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                                            <i class="fas fa-check mr-1"></i>Patvirtinti
+                                        </button>
+                                        <button onclick="updateRequestStatus(${req.id}, 'rejected')" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                            <i class="fas fa-times mr-1"></i>Atmesti
+                                        </button>
+                                    ` : ''}
+                                    <button onclick="editRequest(${req.id})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                        <i class="fas fa-edit mr-1"></i>Redaguoti
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')
+                }
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    function showCreateForm() {
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-6">Nauja prekių užklausa</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Pavadinimas *</label>
+                        <input id="req-title" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                               placeholder="Užklausos pavadinimas">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Aprašymas</label>
+                        <textarea id="req-desc" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                                  placeholder="Detalus aprašymas"></textarea>
+                    </div>
+                    
+                    <div class="border-t pt-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-medium">Prekės</h4>
+                            <button onclick="addProductLine()" class="bg-blue-600 text-white px-3 py-2 rounded-md text-sm hover:bg-blue-700">
+                                <i class="fas fa-plus mr-1"></i>Pridėti prekę
+                            </button>
+                        </div>
+                        
+                        <div id="products-container">
+                            <div class="product-line grid grid-cols-12 gap-2 mb-3 items-end">
+                                <div class="col-span-4">
+                                    <label class="block text-xs font-medium text-gray-700">Prekė</label>
+                                    <input type="text" class="product-name w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="Prekės pavadinimas">
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-xs font-medium text-gray-700">Kiekis</label>
+                                    <input type="number" class="product-qty w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="1" value="1" onchange="calculateTotal(this)">
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-xs font-medium text-gray-700">Kaina €</label>
+                                    <input type="number" step="0.01" class="product-price w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="0.00" onchange="calculateTotal(this)">
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-xs font-medium text-gray-700">Viso €</label>
+                                    <input type="text" class="product-total w-full px-2 py-1 border border-gray-300 rounded text-sm bg-gray-100" readonly>
+                                </div>
+                                <div class="col-span-2">
+                                    <button onclick="removeProductLine(this)" class="w-full bg-red-600 text-white px-2 py-1 rounded text-sm hover:bg-red-700" disabled>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mt-4 p-3 bg-gray-50 rounded">
+                            <span class="font-medium">Bendra suma:</span>
+                            <span id="grand-total" class="font-bold text-lg">€0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3 pt-4">
+                        <button onclick="createRequest('draft')" class="flex-1 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700">
+                            <i class="fas fa-save mr-2"></i>Išsaugoti kaip juodraštį
+                        </button>
+                        <button onclick="createRequest('pending')" class="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                            <i class="fas fa-paper-plane mr-2"></i>Pateikti tvirtinimui
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    function addProductLine() {
+        const container = document.getElementById('products-container');
+        const lineCount = container.children.length;
+        
+        const newLine = document.createElement('div');
+        newLine.className = 'product-line grid grid-cols-12 gap-2 mb-3 items-end';
+        newLine.innerHTML = `
+            <div class="col-span-4">
+                <input type="text" class="product-name w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="Prekės pavadinimas">
+            </div>
+            <div class="col-span-2">
+                <input type="number" class="product-qty w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="1" value="1" onchange="calculateTotal(this)">
+            </div>
+            <div class="col-span-2">
+                <input type="number" step="0.01" class="product-price w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="0.00" onchange="calculateTotal(this)">
+            </div>
+            <div class="col-span-2">
+                <input type="text" class="product-total w-full px-2 py-1 border border-gray-300 rounded text-sm bg-gray-100" readonly>
+            </div>
+            <div class="col-span-2">
+                <button onclick="removeProductLine(this)" class="w-full bg-red-600 text-white px-2 py-1 rounded text-sm hover:bg-red-700">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        container.appendChild(newLine);
+        updateRemoveButtons();
+    }
+
+    function removeProductLine(button) {
+        const line = button.closest('.product-line');
+        line.remove();
+        updateRemoveButtons();
+        calculateGrandTotal();
+    }
+
+    function updateRemoveButtons() {
+        const lines = document.querySelectorAll('.product-line');
+        lines.forEach((line, index) => {
+            const button = line.querySelector('button');
+            button.disabled = lines.length === 1;
+        });
+    }
+
+    function calculateTotal(input) {
+        const line = input.closest('.product-line');
+        const qty = parseFloat(line.querySelector('.product-qty').value) || 0;
+        const price = parseFloat(line.querySelector('.product-price').value) || 0;
+        const total = qty * price;
+        
+        line.querySelector('.product-total').value = '€' + total.toFixed(2);
+        calculateGrandTotal();
+    }
+
+    function calculateGrandTotal() {
+        const lines = document.querySelectorAll('.product-line');
+        let grandTotal = 0;
+        
+        lines.forEach(line => {
+            const qty = parseFloat(line.querySelector('.product-qty').value) || 0;
+            const price = parseFloat(line.querySelector('.product-price').value) || 0;
+            grandTotal += qty * price;
+        });
+        
+        const grandTotalElement = document.getElementById('grand-total');
+        if (grandTotalElement) {
+            grandTotalElement.textContent = '€' + grandTotal.toFixed(2);
+        }
+    }
+
+    function createRequest(status) {
+        const title = document.getElementById('req-title').value;
+        const description = document.getElementById('req-desc').value;
+        
+        if (!title.trim()) {
+            alert('Prašome įvesti užklausos pavadinimą');
+            return;
+        }
+        
+        // Collect products
+        const lines = document.querySelectorAll('.product-line');
+        const items = [];
+        
+        lines.forEach(line => {
+            const name = line.querySelector('.product-name').value.trim();
+            const qty = parseFloat(line.querySelector('.product-qty').value) || 0;
+            const price = parseFloat(line.querySelector('.product-price').value) || 0;
+            
+            if (name && qty > 0) {
+                items.push({
+                    product: name,
+                    quantity: qty,
+                    unit_price: price,
+                    total_price: qty * price
+                });
+            }
+        });
+        
+        if (items.length === 0) {
+            alert('Prašome pridėti bent vieną prekę');
+            return;
+        }
+        
+        // Create new request
+        const newRequest = {
+            id: Math.max(...requests.map(r => r.id), 0) + 1,
+            title: title,
+            description: description,
+            status: status,
+            user_id: currentUser.id,
+            created_at: new Date().toISOString(),
+            items: items
+        };
+        
+        requests.push(newRequest);
+        localStorage.setItem('demo_requests', JSON.stringify(requests));
+        
+        alert(status === 'draft' ? 'Užklausa išsaugota kaip juodraštis!' : 'Užklausa pateikta tvirtinimui!');
+        showRequests();
+        updateDashboardStats();
+    }
+
+    function updateRequestStatus(requestId, newStatus) {
+        const request = requests.find(r => r.id === requestId);
+        if (request) {
+            request.status = newStatus;
+            localStorage.setItem('demo_requests', JSON.stringify(requests));
+            
+            alert(`Užklausa "${request.title}" ${newStatus === 'approved' ? 'patvirtinta' : 'atmesta'}!`);
+            showRequests();
+            updateDashboardStats();
+        }
+    }
+
+    function editRequest(requestId) {
+        alert('Redagavimo funkcija bus pridėta ateityje');
+    }
+
+    function logout() {
+        currentUser = null;
+        document.getElementById('login-section').classList.remove('hidden');
+        document.getElementById('dashboard-section').classList.add('hidden');
+        document.getElementById('content-area').innerHTML = '';
+        
+        // Reset form
+        document.getElementById('email').value = 'admin@company.com';
+        document.getElementById('password').value = 'admin123';
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-login for demo (remove in production)
+        // login();
+        
+        // Enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !document.getElementById('login-section').classList.contains('hidden')) {
+                login();
+            }
+        });
+    });
+    </script>
+</body>
+</html>

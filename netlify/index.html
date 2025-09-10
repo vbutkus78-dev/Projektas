@@ -175,6 +175,56 @@
         </div>
     </div>
 
+    <!-- Edit User Modal -->
+    <div id="edit-user-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 class="text-lg font-semibold mb-4">Redaguoti vartotoją</h3>
+            
+            <div class="space-y-4">
+                <input type="hidden" id="edit-user-id">
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Vardas</label>
+                    <input id="edit-user-name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">El. paštas</label>
+                    <input id="edit-user-email" type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Slaptažodis (palikite tuščią, jei nekeičiate)</label>
+                    <input id="edit-user-password" type="password" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Naujas slaptažodis">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Rolė</label>
+                    <select id="edit-user-role" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="employee">Darbuotojas</option>
+                        <option value="tech_director">Techninis direktorius</option>
+                        <option value="director">Direktorius</option>
+                        <option value="admin">Administratorius</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Skyrius</label>
+                    <input id="edit-user-department" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+            </div>
+            
+            <div class="flex space-x-3 mt-6">
+                <button type="button" onclick="saveUserChanges()" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+                    <i class="fas fa-save mr-2"></i>Išsaugoti
+                </button>
+                <button type="button" onclick="closeEditUserModal()" class="flex-1 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700">
+                    Atšaukti
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
     // Enhanced user roles and permissions
     let currentUser = null;
@@ -264,30 +314,6 @@
                     created_at: new Date(Date.now() - 172800000).toISOString(),
                     items: [
                         { product: 'Laptop Dell', quantity: 3, unit_price: 899.99, total_price: 2699.97 }
-                    ]
-                },
-                {
-                    id: 3,
-                    title: 'Virtuvės įranga',
-                    description: 'Kavos aparatas ir mikrobanginė krosnelė personalui',
-                    status: 'clarification_needed',
-                    user_id: 2,
-                    created_at: new Date().toISOString(),
-                    items: [
-                        { product: 'Kavos aparatas', quantity: 1, unit_price: 299.99, total_price: 299.99 },
-                        { product: 'Mikrobanginė krosnelė', quantity: 1, unit_price: 149.99, total_price: 149.99 }
-                    ]
-                },
-                {
-                    id: 4,
-                    title: 'Užklausa atmetimui',
-                    description: 'Ši užklausa bus atmesta kaip pavyzdys',
-                    status: 'rejected',
-                    user_id: 4,
-                    rejected_reason: 'Nepakankamas biudžetas šiems pirkiniams',
-                    created_at: new Date(Date.now() - 259200000).toISOString(),
-                    items: [
-                        { product: 'Brangus produktas', quantity: 1, unit_price: 9999.99, total_price: 9999.99 }
                     ]
                 }
             ];
@@ -754,7 +780,7 @@
                                 <div class="text-xs text-gray-500">Teisės: ${user.permissions.join(', ')}</div>
                             </div>
                             <div class="space-x-2">
-                                <button type="button" onclick="editUser(${user.id})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                <button type="button" onclick="openEditUserModal(${user.id})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
                                     <i class="fas fa-edit mr-1"></i>Redaguoti
                                 </button>
                                 ${user.id !== 1 ? `
@@ -874,6 +900,97 @@
         showUserManagement();
     }
 
+    function openEditUserModal(userId) {
+        const user = users.find(u => u.id === userId);
+        if (!user) {
+            alert('Vartotojas nerastas');
+            return;
+        }
+        
+        // Fill the modal form
+        document.getElementById('edit-user-id').value = user.id;
+        document.getElementById('edit-user-name').value = user.name;
+        document.getElementById('edit-user-email').value = user.email;
+        document.getElementById('edit-user-password').value = '';
+        document.getElementById('edit-user-role').value = user.role;
+        document.getElementById('edit-user-department').value = user.department;
+        
+        // Show modal
+        document.getElementById('edit-user-modal').classList.remove('hidden');
+    }
+
+    function closeEditUserModal() {
+        document.getElementById('edit-user-modal').classList.add('hidden');
+    }
+
+    function saveUserChanges() {
+        const userId = parseInt(document.getElementById('edit-user-id').value);
+        const name = document.getElementById('edit-user-name').value.trim();
+        const email = document.getElementById('edit-user-email').value.trim();
+        const password = document.getElementById('edit-user-password').value.trim();
+        const role = document.getElementById('edit-user-role').value;
+        const department = document.getElementById('edit-user-department').value.trim();
+        
+        if (!name || !email || !department) {
+            alert('Prašome užpildyti visus laukus');
+            return;
+        }
+        
+        // Find user to edit
+        const userIndex = users.findIndex(u => u.id === userId);
+        if (userIndex === -1) {
+            alert('Vartotojas nerastas');
+            return;
+        }
+        
+        // Check if email is unique (excluding current user)
+        if (users.find(u => u.email === email && u.id !== userId)) {
+            alert('Vartotojas su tokiu el. paštu jau egzistuoja');
+            return;
+        }
+        
+        // Set permissions based on role
+        let permissions = [];
+        switch (role) {
+            case 'admin':
+                permissions = ['create', 'read', 'update', 'delete', 'approve', 'reject', 'manage_users', 'reports'];
+                break;
+            case 'tech_director':
+                permissions = ['create', 'read', 'update', 'manage_requests'];
+                break;
+            case 'director':
+                permissions = ['read', 'approve', 'reject', 'return_for_clarification'];
+                break;
+            case 'employee':
+                permissions = ['create', 'read', 'update_own'];
+                break;
+        }
+        
+        // Update user
+        users[userIndex].name = name;
+        users[userIndex].email = email;
+        if (password) {
+            users[userIndex].password = password;
+        }
+        users[userIndex].role = role;
+        users[userIndex].department = department;
+        users[userIndex].permissions = permissions;
+        
+        // Save to localStorage
+        localStorage.setItem('demo_users', JSON.stringify(users));
+        
+        // Update current user if editing self
+        if (currentUser && currentUser.id === userId) {
+            currentUser = users[userIndex];
+        }
+        
+        alert(`Vartotojas "${name}" sėkmingai atnaujintas!`);
+        
+        // Close modal and refresh view
+        closeEditUserModal();
+        showUserManagement();
+    }
+
     function deleteUser(userId) {
         if (userId === 1) {
             alert('Negalima ištrinti pagrindinio administratoriaus');
@@ -891,10 +1008,6 @@
                 showUserManagement();
             }
         }
-    }
-
-    function editUser(userId) {
-        alert('Vartotojo redagavimo funkcija bus pridėta ateityje');
     }
 
     function showReports() {
@@ -1010,6 +1123,13 @@
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !document.getElementById('login-section').classList.contains('hidden')) {
                 login();
+            }
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('edit-user-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditUserModal();
             }
         });
         

@@ -32,9 +32,28 @@
                             <input id="password" type="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
                                    placeholder="admin123" value="admin123">
                         </div>
-                        <button onclick="login()" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-md hover:from-blue-700 hover:to-purple-700 transition-all">
+                        <button id="login-btn" type="button" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-md hover:from-blue-700 hover:to-purple-700 transition-all">
                             <i class="fas fa-sign-in-alt mr-2"></i>Prisijungti
                         </button>
+                        
+                        <!-- Quick login buttons -->
+                        <div class="border-t pt-4">
+                            <p class="text-sm text-gray-600 mb-2">Greitas prisijungimas:</p>
+                            <div class="space-y-2">
+                                <button type="button" onclick="quickLogin('admin@company.com', 'admin123')" class="w-full text-left bg-red-50 hover:bg-red-100 text-red-700 px-3 py-2 rounded text-sm border">
+                                    🔴 Vadybininkas (Admin)
+                                </button>
+                                <button type="button" onclick="quickLogin('director@company.com', 'director123')" class="w-full text-left bg-purple-50 hover:bg-purple-100 text-purple-700 px-3 py-2 rounded text-sm border">
+                                    🟣 Direktorius
+                                </button>
+                                <button type="button" onclick="quickLogin('tech@company.com', 'tech123')" class="w-full text-left bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-2 rounded text-sm border">
+                                    🔵 Techninis Direktorius
+                                </button>
+                                <button type="button" onclick="quickLogin('employee@company.com', 'employee123')" class="w-full text-left bg-green-50 hover:bg-green-100 text-green-700 px-3 py-2 rounded text-sm border">
+                                    🟢 Darbuotojas
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="bg-gray-50 p-4 rounded-md">
@@ -72,7 +91,7 @@
                         <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
                         <div id="user-info" class="text-gray-600"></div>
                     </div>
-                    <button onclick="logout()" class="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-all">
+                    <button type="button" onclick="logout()" class="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-all">
                         <i class="fas fa-sign-out-alt mr-2"></i>Atsijungti
                     </button>
                 </div>
@@ -83,13 +102,13 @@
                         <i class="fas fa-cog mr-2"></i>Administravimas
                     </h3>
                     <div class="grid md:grid-cols-3 gap-4">
-                        <button onclick="showUserManagement()" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700">
+                        <button type="button" onclick="showUserManagement()" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700">
                             <i class="fas fa-users mr-2"></i>Vartotojų valdymas
                         </button>
-                        <button onclick="showReports()" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700">
+                        <button type="button" onclick="showReports()" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700">
                             <i class="fas fa-chart-bar mr-2"></i>Ataskaitos
                         </button>
-                        <button onclick="clearAllData()" class="bg-red-800 text-white py-2 px-4 rounded-md hover:bg-red-900">
+                        <button type="button" onclick="clearAllData()" class="bg-red-800 text-white py-2 px-4 rounded-md hover:bg-red-900">
                             <i class="fas fa-trash mr-2"></i>Išvalyti duomenis
                         </button>
                     </div>
@@ -138,13 +157,13 @@
                 </div>
                 
                 <div class="grid md:grid-cols-2 gap-4 mb-6">
-                    <button onclick="showRequests()" class="bg-white border-2 border-blue-500 text-blue-600 py-4 px-6 rounded-lg hover:bg-blue-50 transition-all">
+                    <button type="button" onclick="showRequests()" class="bg-white border-2 border-blue-500 text-blue-600 py-4 px-6 rounded-lg hover:bg-blue-50 transition-all">
                         <i class="fas fa-list text-xl mb-2"></i>
                         <div class="font-medium">Peržiūrėti užklausas</div>
                         <div class="text-sm opacity-75">Valdyti esamas užklausas</div>
                     </button>
                     
-                    <button onclick="showCreateForm()" class="bg-white border-2 border-green-500 text-green-600 py-4 px-6 rounded-lg hover:bg-green-50 transition-all" id="create-btn">
+                    <button type="button" onclick="showCreateForm()" class="bg-white border-2 border-green-500 text-green-600 py-4 px-6 rounded-lg hover:bg-green-50 transition-all" id="create-btn">
                         <i class="fas fa-plus text-xl mb-2"></i>
                         <div class="font-medium">Kurti naują užklausą</div>
                         <div class="text-sm opacity-75">Pridėti naują prekių užklausą</div>
@@ -159,8 +178,8 @@
     <script>
     // Enhanced user roles and permissions
     let currentUser = null;
-    let requests = JSON.parse(localStorage.getItem('demo_requests') || '[]');
-    let users = JSON.parse(localStorage.getItem('demo_users') || JSON.stringify([
+    let requests = [];
+    let users = [
         { 
             id: 1, 
             email: 'admin@company.com', 
@@ -197,78 +216,117 @@
             department: 'Pirkimai',
             permissions: ['create', 'read', 'update_own']
         }
-    ]));
+    ];
 
-    // Initialize demo data if empty
-    if (requests.length === 0) {
-        requests = [
-            {
-                id: 1,
-                title: 'Biuro reikmenų užsakymas',
-                description: 'Reikalingi biuro reikmenys: popierius, rašikliai, segtuvai',
-                status: 'pending',
-                user_id: 4,
-                created_at: new Date(Date.now() - 86400000).toISOString(),
-                items: [
-                    { product: 'A4 popierius', quantity: 10, unit_price: 5.99, total_price: 59.90 },
-                    { product: 'Rašikliai (mėlyni)', quantity: 20, unit_price: 1.50, total_price: 30.00 }
-                ]
-            },
-            {
-                id: 2,
-                title: 'IT įrangos atnaujinimas',
-                description: 'Reikalingi nauji kompiuteriai darbuotojams',
-                status: 'approved',
-                user_id: 1,
-                created_at: new Date(Date.now() - 172800000).toISOString(),
-                items: [
-                    { product: 'Laptop Dell', quantity: 3, unit_price: 899.99, total_price: 2699.97 }
-                ]
-            },
-            {
-                id: 3,
-                title: 'Virtuvės įranga',
-                description: 'Kavos aparatas ir mikrobanginė krosnelė personalui',
-                status: 'clarification_needed',
-                user_id: 2,
-                created_at: new Date().toISOString(),
-                items: [
-                    { product: 'Kavos aparatas', quantity: 1, unit_price: 299.99, total_price: 299.99 },
-                    { product: 'Mikrobanginė krosnelė', quantity: 1, unit_price: 149.99, total_price: 149.99 }
-                ]
-            },
-            {
-                id: 4,
-                title: 'Užklausa atmetimui',
-                description: 'Ši užklausa bus atmesta kaip pavyzdys',
-                status: 'rejected',
-                user_id: 4,
-                rejected_reason: 'Nepakankamas biudžetas šiems pirkiniams',
-                created_at: new Date(Date.now() - 259200000).toISOString(),
-                items: [
-                    { product: 'Brangus produktas', quantity: 1, unit_price: 9999.99, total_price: 9999.99 }
-                ]
+    // Initialize data
+    function initializeData() {
+        // Load from localStorage or use defaults
+        const savedUsers = localStorage.getItem('demo_users');
+        if (savedUsers) {
+            try {
+                users = JSON.parse(savedUsers);
+            } catch (e) {
+                console.error('Error loading users:', e);
             }
-        ];
-        localStorage.setItem('demo_requests', JSON.stringify(requests));
+        } else {
+            localStorage.setItem('demo_users', JSON.stringify(users));
+        }
+
+        const savedRequests = localStorage.getItem('demo_requests');
+        if (savedRequests) {
+            try {
+                requests = JSON.parse(savedRequests);
+            } catch (e) {
+                console.error('Error loading requests:', e);
+                requests = [];
+            }
+        } else {
+            // Initialize demo data
+            requests = [
+                {
+                    id: 1,
+                    title: 'Biuro reikmenų užsakymas',
+                    description: 'Reikalingi biuro reikmenys: popierius, rašikliai, segtuvai',
+                    status: 'pending',
+                    user_id: 4,
+                    created_at: new Date(Date.now() - 86400000).toISOString(),
+                    items: [
+                        { product: 'A4 popierius', quantity: 10, unit_price: 5.99, total_price: 59.90 },
+                        { product: 'Rašikliai (mėlyni)', quantity: 20, unit_price: 1.50, total_price: 30.00 }
+                    ]
+                },
+                {
+                    id: 2,
+                    title: 'IT įrangos atnaujinimas',
+                    description: 'Reikalingi nauji kompiuteriai darbuotojams',
+                    status: 'approved',
+                    user_id: 1,
+                    created_at: new Date(Date.now() - 172800000).toISOString(),
+                    items: [
+                        { product: 'Laptop Dell', quantity: 3, unit_price: 899.99, total_price: 2699.97 }
+                    ]
+                },
+                {
+                    id: 3,
+                    title: 'Virtuvės įranga',
+                    description: 'Kavos aparatas ir mikrobanginė krosnelė personalui',
+                    status: 'clarification_needed',
+                    user_id: 2,
+                    created_at: new Date().toISOString(),
+                    items: [
+                        { product: 'Kavos aparatas', quantity: 1, unit_price: 299.99, total_price: 299.99 },
+                        { product: 'Mikrobanginė krosnelė', quantity: 1, unit_price: 149.99, total_price: 149.99 }
+                    ]
+                },
+                {
+                    id: 4,
+                    title: 'Užklausa atmetimui',
+                    description: 'Ši užklausa bus atmesta kaip pavyzdys',
+                    status: 'rejected',
+                    user_id: 4,
+                    rejected_reason: 'Nepakankamas biudžetas šiems pirkiniams',
+                    created_at: new Date(Date.now() - 259200000).toISOString(),
+                    items: [
+                        { product: 'Brangus produktas', quantity: 1, unit_price: 9999.99, total_price: 9999.99 }
+                    ]
+                }
+            ];
+            localStorage.setItem('demo_requests', JSON.stringify(requests));
+        }
     }
 
     function hasPermission(permission) {
         return currentUser && currentUser.permissions && currentUser.permissions.includes(permission);
     }
 
+    function quickLogin(email, password) {
+        document.getElementById('email').value = email;
+        document.getElementById('password').value = password;
+        login();
+    }
+
     function login() {
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        
+        console.log('Attempting login with:', email, password); // Debug
+        
+        if (!email || !password) {
+            alert('Prašome įvesti el. paštą ir slaptažodį');
+            return;
+        }
         
         const user = users.find(u => u.email === email && u.password === password);
+        console.log('Found user:', user); // Debug
         
         if (user) {
             currentUser = user;
+            console.log('Login successful, current user:', currentUser); // Debug
             showDashboard();
             updateDashboardStats();
         } else {
             alert('Neteisingi prisijungimo duomenys');
+            console.log('Available users:', users); // Debug
         }
     }
 
@@ -283,13 +341,13 @@
             employee: 'text-green-600 bg-green-100'
         };
         
-        document.getElementById('user-info').innerHTML = \`
+        document.getElementById('user-info').innerHTML = `
             <div class="mt-2">
-                <span class="font-medium">\${currentUser.name}</span> | 
-                <span class="text-sm px-2 py-1 rounded-full \${roleColors[currentUser.role]}">\${currentUser.role}</span> | 
-                <span class="text-sm text-gray-500">\${currentUser.department}</span>
+                <span class="font-medium">${currentUser.name}</span> | 
+                <span class="text-sm px-2 py-1 rounded-full ${roleColors[currentUser.role]}">${currentUser.role}</span> | 
+                <span class="text-sm text-gray-500">${currentUser.department}</span>
             </div>
-        \`;
+        `;
 
         // Show admin panel for admin users
         if (hasPermission('manage_users')) {
@@ -341,87 +399,87 @@
             clarification_needed: 'Reikia patikslinti'
         };
         
-        const html = \`
+        const html = `
             <div class="bg-white border rounded-lg p-6">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-semibold">Užklausos (\${userRequests.length})</h3>
-                    \${hasPermission('create') ? \`
-                        <button onclick="showCreateForm()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                    <h3 class="text-lg font-semibold">Užklausos (${userRequests.length})</h3>
+                    ${hasPermission('create') ? `
+                        <button type="button" onclick="showCreateForm()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
                             <i class="fas fa-plus mr-2"></i>Nauja užklausa
                         </button>
-                    \` : ''}
+                    ` : ''}
                 </div>
                 
-                \${userRequests.length === 0 ? 
+                ${userRequests.length === 0 ? 
                     '<div class="text-center py-8 text-gray-500"><i class="fas fa-inbox text-4xl mb-4"></i><p>Užklausų nėra</p></div>' :
                     userRequests.map(req => {
                         const user = users.find(u => u.id === req.user_id);
                         const totalValue = req.items ? req.items.reduce((sum, item) => sum + (item.total_price || 0), 0) : 0;
                         
-                        return \`
+                        return `
                             <div class="border rounded-lg p-4 mb-4 hover:shadow-md transition-shadow">
                                 <div class="flex justify-between items-start mb-3">
                                     <div>
-                                        <h4 class="font-medium text-lg">\${req.title}</h4>
-                                        <p class="text-gray-600 text-sm">\${req.description}</p>
-                                        \${req.rejected_reason ? \`<p class="text-red-600 text-sm mt-1"><strong>Atmetimo priežastis:</strong> \${req.rejected_reason}</p>\` : ''}
-                                        \${req.clarification_note ? \`<p class="text-orange-600 text-sm mt-1"><strong>Patikslinimo pastaba:</strong> \${req.clarification_note}</p>\` : ''}
+                                        <h4 class="font-medium text-lg">${req.title}</h4>
+                                        <p class="text-gray-600 text-sm">${req.description}</p>
+                                        ${req.rejected_reason ? `<p class="text-red-600 text-sm mt-1"><strong>Atmetimo priežastis:</strong> ${req.rejected_reason}</p>` : ''}
+                                        ${req.clarification_note ? `<p class="text-orange-600 text-sm mt-1"><strong>Patikslinimo pastaba:</strong> ${req.clarification_note}</p>` : ''}
                                     </div>
-                                    <span class="px-3 py-1 rounded-full text-xs font-medium \${statusColors[req.status]}">\${statusLabels[req.status]}</span>
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium ${statusColors[req.status]}">${statusLabels[req.status]}</span>
                                 </div>
                                 
                                 <div class="grid md:grid-cols-3 gap-4 text-sm text-gray-600 mb-3">
-                                    <div><i class="fas fa-user mr-1"></i>Sukūrė: \${user ? user.name : 'Nežinomas'}</div>
-                                    <div><i class="fas fa-calendar mr-1"></i>Data: \${new Date(req.created_at).toLocaleDateString('lt-LT')}</div>
-                                    <div><i class="fas fa-euro-sign mr-1"></i>Suma: €\${totalValue.toFixed(2)}</div>
+                                    <div><i class="fas fa-user mr-1"></i>Sukūrė: ${user ? user.name : 'Nežinomas'}</div>
+                                    <div><i class="fas fa-calendar mr-1"></i>Data: ${new Date(req.created_at).toLocaleDateString('lt-LT')}</div>
+                                    <div><i class="fas fa-euro-sign mr-1"></i>Suma: €${totalValue.toFixed(2)}</div>
                                 </div>
                                 
-                                \${req.items && req.items.length > 0 ? \`
+                                ${req.items && req.items.length > 0 ? `
                                     <div class="bg-gray-50 rounded p-3">
-                                        <div class="text-sm font-medium mb-2">Prekės (\${req.items.length}):</div>
-                                        \${req.items.map(item => \`
+                                        <div class="text-sm font-medium mb-2">Prekės (${req.items.length}):</div>
+                                        ${req.items.map(item => `
                                             <div class="flex justify-between text-xs text-gray-600 mb-1">
-                                                <span>\${item.product} × \${item.quantity}</span>
-                                                <span>€\${(item.total_price || 0).toFixed(2)}</span>
+                                                <span>${item.product} × ${item.quantity}</span>
+                                                <span>€${(item.total_price || 0).toFixed(2)}</span>
                                             </div>
-                                        \`).join('')}
+                                        `).join('')}
                                     </div>
-                                \` : ''}
+                                ` : ''}
                                 
                                 <div class="flex justify-end mt-3 space-x-2">
-                                    \${hasPermission('approve') && req.status === 'pending' ? \`
-                                        <button onclick="updateRequestStatus(\${req.id}, 'approved')" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                                    ${hasPermission('approve') && req.status === 'pending' ? `
+                                        <button type="button" onclick="updateRequestStatus(${req.id}, 'approved')" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
                                             <i class="fas fa-check mr-1"></i>Patvirtinti
                                         </button>
-                                        <button onclick="requestClarification(\${req.id})" class="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-700">
+                                        <button type="button" onclick="requestClarification(${req.id})" class="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-700">
                                             <i class="fas fa-question mr-1"></i>Grąžinti tikslinti
                                         </button>
-                                        <button onclick="rejectRequest(\${req.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                        <button type="button" onclick="rejectRequest(${req.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
                                             <i class="fas fa-times mr-1"></i>Atmesti
                                         </button>
-                                    \` : ''}
-                                    \${hasPermission('update') || (hasPermission('update_own') && req.user_id === currentUser.id) ? \`
-                                        <button onclick="editRequest(\${req.id})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                    ` : ''}
+                                    ${hasPermission('update') || (hasPermission('update_own') && req.user_id === currentUser.id) ? `
+                                        <button type="button" onclick="editRequest(${req.id})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
                                             <i class="fas fa-edit mr-1"></i>Redaguoti
                                         </button>
-                                    \` : ''}
-                                    \${hasPermission('delete') ? \`
-                                        <button onclick="deleteRequest(\${req.id})" class="bg-red-800 text-white px-3 py-1 rounded text-sm hover:bg-red-900">
+                                    ` : ''}
+                                    ${hasPermission('delete') ? `
+                                        <button type="button" onclick="deleteRequest(${req.id})" class="bg-red-800 text-white px-3 py-1 rounded text-sm hover:bg-red-900">
                                             <i class="fas fa-trash mr-1"></i>Ištrinti
                                         </button>
-                                    \` : ''}
+                                    ` : ''}
                                 </div>
                             </div>
-                        \`;
+                        `;
                     }).join('')
                 }
             </div>
-        \`;
+        `;
         document.getElementById('content-area').innerHTML = html;
     }
 
     function showCreateForm() {
-        const html = \`
+        const html = `
             <div class="bg-white border rounded-lg p-6">
                 <h3 class="text-lg font-semibold mb-6">Nauja prekių užklausa</h3>
                 
@@ -441,7 +499,7 @@
                     <div class="border-t pt-4">
                         <div class="flex justify-between items-center mb-4">
                             <h4 class="font-medium">Prekės</h4>
-                            <button onclick="addProductLine()" class="bg-blue-600 text-white px-3 py-2 rounded-md text-sm hover:bg-blue-700">
+                            <button type="button" onclick="addProductLine()" class="bg-blue-600 text-white px-3 py-2 rounded-md text-sm hover:bg-blue-700">
                                 <i class="fas fa-plus mr-1"></i>Pridėti prekę
                             </button>
                         </div>
@@ -465,7 +523,7 @@
                                     <input type="text" class="product-total w-full px-2 py-1 border border-gray-300 rounded text-sm bg-gray-100" readonly>
                                 </div>
                                 <div class="col-span-2">
-                                    <button onclick="removeProductLine(this)" class="w-full bg-red-600 text-white px-2 py-1 rounded text-sm hover:bg-red-700" disabled>
+                                    <button type="button" onclick="removeProductLine(this)" class="w-full bg-red-600 text-white px-2 py-1 rounded text-sm hover:bg-red-700" disabled>
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -479,26 +537,25 @@
                     </div>
                     
                     <div class="flex space-x-3 pt-4">
-                        <button onclick="createRequest('draft')" class="flex-1 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700">
+                        <button type="button" onclick="createRequest('draft')" class="flex-1 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700">
                             <i class="fas fa-save mr-2"></i>Išsaugoti kaip juodraštį
                         </button>
-                        <button onclick="createRequest('pending')" class="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                        <button type="button" onclick="createRequest('pending')" class="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
                             <i class="fas fa-paper-plane mr-2"></i>Pateikti tvirtinimui
                         </button>
                     </div>
                 </div>
             </div>
-        \`;
+        `;
         document.getElementById('content-area').innerHTML = html;
     }
 
     function addProductLine() {
         const container = document.getElementById('products-container');
-        const lineCount = container.children.length;
         
         const newLine = document.createElement('div');
         newLine.className = 'product-line grid grid-cols-12 gap-2 mb-3 items-end';
-        newLine.innerHTML = \`
+        newLine.innerHTML = `
             <div class="col-span-4">
                 <input type="text" class="product-name w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="Prekės pavadinimas">
             </div>
@@ -512,11 +569,11 @@
                 <input type="text" class="product-total w-full px-2 py-1 border border-gray-300 rounded text-sm bg-gray-100" readonly>
             </div>
             <div class="col-span-2">
-                <button onclick="removeProductLine(this)" class="w-full bg-red-600 text-white px-2 py-1 rounded text-sm hover:bg-red-700">
+                <button type="button" onclick="removeProductLine(this)" class="w-full bg-red-600 text-white px-2 py-1 rounded text-sm hover:bg-red-700">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
-        \`;
+        `;
         
         container.appendChild(newLine);
         updateRemoveButtons();
@@ -621,7 +678,7 @@
             request.status = newStatus;
             localStorage.setItem('demo_requests', JSON.stringify(requests));
             
-            alert(\`Užklausa "\${request.title}" \${newStatus === 'approved' ? 'patvirtinta' : 'atmesta'}!\`);
+            alert(`Užklausa "${request.title}" ${newStatus === 'approved' ? 'patvirtinta' : 'atmesta'}!`);
             showRequests();
             updateDashboardStats();
         }
@@ -636,7 +693,7 @@
                 request.clarification_note = note.trim();
                 localStorage.setItem('demo_requests', JSON.stringify(requests));
                 
-                alert(\`Užklausa "\${request.title}" grąžinta tikslinti!\`);
+                alert(`Užklausa "${request.title}" grąžinta tikslinti!`);
                 showRequests();
                 updateDashboardStats();
             }
@@ -652,7 +709,7 @@
                 request.rejected_reason = reason.trim();
                 localStorage.setItem('demo_requests', JSON.stringify(requests));
                 
-                alert(\`Užklausa "\${request.title}" atmesta!\`);
+                alert(`Užklausa "${request.title}" atmesta!`);
                 showRequests();
                 updateDashboardStats();
             }
@@ -667,7 +724,7 @@
                 requests.splice(requestIndex, 1);
                 localStorage.setItem('demo_requests', JSON.stringify(requests));
                 
-                alert(\`Užklausa "\${request.title}" ištrinta!\`);
+                alert(`Užklausa "${request.title}" ištrinta!`);
                 showRequests();
                 updateDashboardStats();
             }
@@ -679,43 +736,43 @@
     }
 
     function showUserManagement() {
-        const html = \`
+        const html = `
             <div class="bg-white border rounded-lg p-6">
                 <div class="flex justify-between items-center mb-6">
                     <h3 class="text-lg font-semibold">Vartotojų valdymas</h3>
-                    <button onclick="showAddUserForm()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                    <button type="button" onclick="showAddUserForm()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
                         <i class="fas fa-plus mr-2"></i>Pridėti vartotoją
                     </button>
                 </div>
                 
                 <div class="space-y-4">
-                    \${users.map(user => \`
+                    ${users.map(user => `
                         <div class="border rounded-lg p-4 flex justify-between items-center">
                             <div>
-                                <div class="font-medium">\${user.name}</div>
-                                <div class="text-sm text-gray-600">\${user.email} | \${user.role} | \${user.department}</div>
-                                <div class="text-xs text-gray-500">Teisės: \${user.permissions.join(', ')}</div>
+                                <div class="font-medium">${user.name}</div>
+                                <div class="text-sm text-gray-600">${user.email} | ${user.role} | ${user.department}</div>
+                                <div class="text-xs text-gray-500">Teisės: ${user.permissions.join(', ')}</div>
                             </div>
                             <div class="space-x-2">
-                                <button onclick="editUser(\${user.id})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                <button type="button" onclick="editUser(${user.id})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
                                     <i class="fas fa-edit mr-1"></i>Redaguoti
                                 </button>
-                                \${user.id !== 1 ? \`
-                                    <button onclick="deleteUser(\${user.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                ${user.id !== 1 ? `
+                                    <button type="button" onclick="deleteUser(${user.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
                                         <i class="fas fa-trash mr-1"></i>Ištrinti
                                     </button>
-                                \` : ''}
+                                ` : ''}
                             </div>
                         </div>
-                    \`).join('')}
+                    `).join('')}
                 </div>
             </div>
-        \`;
+        `;
         document.getElementById('content-area').innerHTML = html;
     }
 
     function showAddUserForm() {
-        const html = \`
+        const html = `
             <div class="bg-white border rounded-lg p-6">
                 <h3 class="text-lg font-semibold mb-6">Pridėti naują vartotoją</h3>
                 
@@ -752,16 +809,16 @@
                     </div>
                     
                     <div class="flex space-x-3 pt-4">
-                        <button onclick="addUser()" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                        <button type="button" onclick="addUser()" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
                             <i class="fas fa-save mr-2"></i>Išsaugoti vartotoją
                         </button>
-                        <button onclick="showUserManagement()" class="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700">
+                        <button type="button" onclick="showUserManagement()" class="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700">
                             Atšaukti
                         </button>
                     </div>
                 </div>
             </div>
-        \`;
+        `;
         document.getElementById('content-area').innerHTML = html;
     }
 
@@ -813,7 +870,7 @@
         users.push(newUser);
         localStorage.setItem('demo_users', JSON.stringify(users));
         
-        alert(\`Vartotojas "\${name}" sėkmingai pridėtas!\`);
+        alert(`Vartotojas "${name}" sėkmingai pridėtas!`);
         showUserManagement();
     }
 
@@ -830,7 +887,7 @@
                 users.splice(userIndex, 1);
                 localStorage.setItem('demo_users', JSON.stringify(users));
                 
-                alert(\`Vartotojas "\${user.name}" ištrintas!\`);
+                alert(`Vartotojas "${user.name}" ištrintas!`);
                 showUserManagement();
             }
         }
@@ -850,7 +907,7 @@
             return sum + reqValue;
         }, 0);
         
-        const html = \`
+        const html = `
             <div class="bg-white border rounded-lg p-6">
                 <h3 class="text-lg font-semibold mb-6">Sistemos ataskaitos</h3>
                 
@@ -860,19 +917,19 @@
                         <div class="space-y-2 text-sm">
                             <div class="flex justify-between">
                                 <span>Iš viso užklausų:</span>
-                                <span class="font-medium">\${totalRequests}</span>
+                                <span class="font-medium">${totalRequests}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span>Patvirtinta:</span>
-                                <span class="font-medium text-green-600">\${approvedRequests}</span>
+                                <span class="font-medium text-green-600">${approvedRequests}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span>Laukia patvirtinimo:</span>
-                                <span class="font-medium text-yellow-600">\${pendingRequests}</span>
+                                <span class="font-medium text-yellow-600">${pendingRequests}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span>Atmesta:</span>
-                                <span class="font-medium text-red-600">\${rejectedRequests}</span>
+                                <span class="font-medium text-red-600">${rejectedRequests}</span>
                             </div>
                         </div>
                     </div>
@@ -882,15 +939,15 @@
                         <div class="space-y-2 text-sm">
                             <div class="flex justify-between">
                                 <span>Bendra vertė:</span>
-                                <span class="font-medium">€\${totalValue.toFixed(2)}</span>
+                                <span class="font-medium">€${totalValue.toFixed(2)}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span>Patvirtintų vertė:</span>
-                                <span class="font-medium text-green-600">€\${requests.filter(r => r.status === 'approved').reduce((sum, req) => sum + (req.items || []).reduce((itemSum, item) => itemSum + (item.total_price || 0), 0), 0).toFixed(2)}</span>
+                                <span class="font-medium text-green-600">€${requests.filter(r => r.status === 'approved').reduce((sum, req) => sum + (req.items || []).reduce((itemSum, item) => itemSum + (item.total_price || 0), 0), 0).toFixed(2)}</span>
                             </div>
                             <div class="flex justify-between">
                                 <span>Vidutinė užklausos vertė:</span>
-                                <span class="font-medium">€\${totalRequests > 0 ? (totalValue / totalRequests).toFixed(2) : '0.00'}</span>
+                                <span class="font-medium">€${totalRequests > 0 ? (totalValue / totalRequests).toFixed(2) : '0.00'}</span>
                             </div>
                         </div>
                     </div>
@@ -899,19 +956,19 @@
                 <div class="mt-6">
                     <h4 class="font-medium mb-3">Vartotojų aktyvumas</h4>
                     <div class="space-y-2">
-                        \${users.map(user => {
+                        ${users.map(user => {
                             const userRequestCount = requests.filter(r => r.user_id === user.id).length;
-                            return \`
+                            return `
                                 <div class="flex justify-between items-center py-2 border-b">
-                                    <span>\${user.name} (\${user.role})</span>
-                                    <span class="text-sm text-gray-600">\${userRequestCount} užklausų</span>
+                                    <span>${user.name} (${user.role})</span>
+                                    <span class="text-sm text-gray-600">${userRequestCount} užklausų</span>
                                 </div>
-                            \`;
+                            `;
                         }).join('')}
                     </div>
                 </div>
             </div>
-        \`;
+        `;
         document.getElementById('content-area').innerHTML = html;
     }
 
@@ -939,14 +996,24 @@
         document.getElementById('password').value = 'admin123';
     }
 
-    // Initialize on page load
+    // Initialize when page loads
     document.addEventListener('DOMContentLoaded', function() {
+        console.log('Page loaded, initializing...'); // Debug
+        
+        // Initialize data
+        initializeData();
+        
+        // Add login button event listener
+        document.getElementById('login-btn').addEventListener('click', login);
+        
         // Enter key support
         document.addEventListener('keypress', function(e) {
             if (e.key === 'Enter' && !document.getElementById('login-section').classList.contains('hidden')) {
                 login();
             }
         });
+        
+        console.log('Initialization complete'); // Debug
     });
     </script>
 </body>

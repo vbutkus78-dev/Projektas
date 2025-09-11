@@ -1,0 +1,2895 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Įmonės pirkimų valdymo sistema</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="max-w-4xl w-full bg-white rounded-lg shadow-md p-8">
+            <!-- Login Form -->
+            <div id="login-section">
+                <div class="text-center mb-8">
+                    <div class="mx-auto w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-shopping-cart text-white text-2xl"></i>
+                    </div>
+                    <h1 class="text-3xl font-bold text-gray-800">Įmonės pirkimų valdymo sistema</h1>
+                    <p class="text-gray-600">Įmonės prekių užsakymų ir pirkimų valdymas</p>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">El. paštas</label>
+                            <input id="email" type="email" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="admin@company.com" value="admin@company.com">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Slaptažodis</label>
+                            <input id="password" type="password" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="admin123" value="admin123">
+                        </div>
+                        <button id="login-btn" type="button" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-md hover:from-blue-700 hover:to-purple-700 transition-all">
+                            <i class="fas fa-sign-in-alt mr-2"></i>Prisijungti
+                        </button>
+                        
+                        <!-- Quick login buttons -->
+                        <div class="border-t pt-4">
+                            <p class="text-sm text-gray-600 mb-2">Greitas prisijungimas:</p>
+                            <div class="space-y-2">
+                                <button type="button" onclick="quickLogin('admin@company.com', 'admin123')" class="w-full text-left bg-red-50 hover:bg-red-100 text-red-700 px-3 py-2 rounded text-sm border">
+                                    🔴 Vadybininkas (Admin)
+                                </button>
+                                <button type="button" onclick="quickLogin('director@company.com', 'director123')" class="w-full text-left bg-purple-50 hover:bg-purple-100 text-purple-700 px-3 py-2 rounded text-sm border">
+                                    🟣 Direktorius
+                                </button>
+                                <button type="button" onclick="quickLogin('tech@company.com', 'tech123')" class="w-full text-left bg-blue-50 hover:bg-blue-100 text-blue-700 px-3 py-2 rounded text-sm border">
+                                    🔵 Techninis Direktorius
+                                </button>
+                                <button type="button" onclick="quickLogin('employee@company.com', 'employee123')" class="w-full text-left bg-green-50 hover:bg-green-100 text-green-700 px-3 py-2 rounded text-sm border">
+                                    🟢 Darbuotojas
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-md">
+                        <h4 class="text-sm font-medium text-gray-700 mb-3">Sistemos vartotojai:</h4>
+                        <div class="space-y-2">
+                            <div class="p-2 bg-white rounded border">
+                                <div class="font-medium text-sm text-red-600">Vadybininkas (Admin)</div>
+                                <div class="text-xs text-gray-600">admin@company.com / admin123</div>
+                                <div class="text-xs text-red-600">Pilna sistemos kontrolė</div>
+                            </div>
+                            <div class="p-2 bg-white rounded border">
+                                <div class="font-medium text-sm text-blue-600">Techninis direktorius</div>
+                                <div class="text-xs text-gray-600">tech@company.com / tech123</div>
+                                <div class="text-xs text-blue-600">Užklausų valdymas</div>
+                            </div>
+                            <div class="p-2 bg-white rounded border">
+                                <div class="font-medium text-sm text-purple-600">Direktorius</div>
+                                <div class="text-xs text-gray-600">director@company.com / director123</div>
+                                <div class="text-xs text-purple-600">Užklausų patvirtinimas</div>
+                            </div>
+                            <div class="p-2 bg-white rounded border">
+                                <div class="font-medium text-sm text-green-600">Darbuotojas</div>
+                                <div class="text-xs text-gray-600">employee@company.com / employee123</div>
+                                <div class="text-xs text-green-600">Užklausų kūrimas</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard -->
+            <div id="dashboard-section" class="hidden">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
+                        <div id="user-info" class="text-gray-600"></div>
+                    </div>
+                    <button type="button" onclick="logout()" class="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700 transition-all">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Atsijungti
+                    </button>
+                </div>
+                
+                <!-- Admin Panel -->
+                <div id="admin-panel" class="hidden mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <h3 class="text-lg font-semibold text-red-800 mb-4">
+                        <i class="fas fa-cog mr-2"></i>Administravimas
+                    </h3>
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <button type="button" onclick="showUserManagement()" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700">
+                            <i class="fas fa-users mr-2"></i>Vartotojų valdymas
+                        </button>
+                        <button type="button" onclick="showReports()" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700">
+                            <i class="fas fa-chart-bar mr-2"></i>Ataskaitos
+                        </button>
+                        <button type="button" onclick="clearAllData()" class="bg-red-800 text-white py-2 px-4 rounded-md hover:bg-red-900">
+                            <i class="fas fa-trash mr-2"></i>Išvalyti duomenis
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Dashboard Statistics -->
+                <div class="grid md:grid-cols-6 gap-4 mb-6">
+                    <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-xs opacity-75">Juodraščiai</div>
+                                <div class="text-xl font-bold" id="draft-count">0</div>
+                            </div>
+                            <i class="fas fa-edit text-xl opacity-75"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 text-white p-4 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-xs opacity-75">Pateikti</div>
+                                <div class="text-xl font-bold" id="submitted-count">0</div>
+                            </div>
+                            <i class="fas fa-paper-plane text-xl opacity-75"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-xs opacity-75">Patvirtinti</div>
+                                <div class="text-xl font-bold" id="approved-count">0</div>
+                            </div>
+                            <i class="fas fa-check-circle text-xl opacity-75"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-xs opacity-75">Užsakyti</div>
+                                <div class="text-xl font-bold" id="ordered-count">0</div>
+                            </div>
+                            <i class="fas fa-truck text-xl opacity-75"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-teal-500 to-teal-600 text-white p-4 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-xs opacity-75">Pristatyti</div>
+                                <div class="text-xl font-bold" id="delivered-count">0</div>
+                            </div>
+                            <i class="fas fa-box-open text-xl opacity-75"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white p-4 rounded-lg">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="text-xs opacity-75">Užbaigti</div>
+                                <div class="text-xl font-bold" id="completed-count">0</div>
+                            </div>
+                            <i class="fas fa-check-double text-xl opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Enterprise Navigation -->
+                <div class="grid md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+                    <button type="button" onclick="showOrders()" class="bg-white border-2 border-blue-500 text-blue-600 py-4 px-6 rounded-lg hover:bg-blue-50 transition-all">
+                        <i class="fas fa-shopping-cart text-xl mb-2"></i>
+                        <div class="font-medium">Užsakymai</div>
+                        <div class="text-sm opacity-75" id="orders-count">0 užsakymų</div>
+                    </button>
+                    
+                    <button type="button" onclick="showProducts()" class="bg-white border-2 border-green-500 text-green-600 py-4 px-6 rounded-lg hover:bg-green-50 transition-all">
+                        <i class="fas fa-box text-xl mb-2"></i>
+                        <div class="font-medium">Produktai</div>
+                        <div class="text-sm opacity-75" id="products-count">0 produktų</div>
+                    </button>
+                    
+                    <button type="button" onclick="showSuppliers()" class="bg-white border-2 border-purple-500 text-purple-600 py-4 px-6 rounded-lg hover:bg-purple-50 transition-all">
+                        <i class="fas fa-truck text-xl mb-2"></i>
+                        <div class="font-medium">Tiekėjai</div>
+                        <div class="text-sm opacity-75" id="suppliers-count">0 tiekėjų</div>
+                    </button>
+                    
+                    <button type="button" onclick="showDirectorDashboard()" class="bg-white border-2 border-indigo-500 text-indigo-600 py-4 px-6 rounded-lg hover:bg-indigo-50 transition-all" style="display: none;" id="director-dashboard-btn">
+                        <i class="fas fa-tachometer-alt text-xl mb-2"></i>
+                        <div class="font-medium">Direktorių</div>
+                        <div class="text-sm opacity-75">Dashboard</div>
+                    </button>
+                    
+                    <button type="button" onclick="showReports()" class="bg-white border-2 border-orange-500 text-orange-600 py-4 px-6 rounded-lg hover:bg-orange-50 transition-all">
+                        <i class="fas fa-chart-bar text-xl mb-2"></i>
+                        <div class="font-medium">Ataskaitos</div>
+                        <div class="text-sm opacity-75">PDF & Excel</div>
+                    </button>
+                    
+                    <button type="button" onclick="showCreateForm()" class="bg-white border-2 border-emerald-500 text-emerald-600 py-4 px-6 rounded-lg hover:bg-emerald-50 transition-all" id="create-btn">
+                        <i class="fas fa-plus text-xl mb-2"></i>
+                        <div class="font-medium">Naujas</div>
+                        <div class="text-sm opacity-75">Užsakymas</div>
+                    </button>
+                </div>
+                
+                <div id="content-area" class="mt-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="edit-user-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 class="text-lg font-semibold mb-4">Redaguoti vartotoją</h3>
+            
+            <div class="space-y-4">
+                <input type="hidden" id="edit-user-id">
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Vardas</label>
+                    <input id="edit-user-name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">El. paštas</label>
+                    <input id="edit-user-email" type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Slaptažodis (palikite tuščią, jei nekeičiate)</label>
+                    <input id="edit-user-password" type="password" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Naujas slaptažodis">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Rolė</label>
+                    <select id="edit-user-role" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                        <option value="employee">Darbuotojas</option>
+                        <option value="tech_director">Techninis direktorius</option>
+                        <option value="director">Direktorius</option>
+                        <option value="admin">Administratorius</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Skyrius</label>
+                    <input id="edit-user-department" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                </div>
+            </div>
+            
+            <div class="flex space-x-3 mt-6">
+                <button type="button" onclick="saveUserChanges()" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+                    <i class="fas fa-save mr-2"></i>Išsaugoti
+                </button>
+                <button type="button" onclick="closeEditUserModal()" class="flex-1 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700">
+                    Atšaukti
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Enhanced enterprise procurement system data structures
+    let currentUser = null;
+    let orders = []; // Renamed from requests to orders for better semantics
+    let products = []; // Product catalog with enhanced data
+    let suppliers = []; // Supplier management
+    let comments = []; // Comments system for orders
+    let attachments = []; // Document attachments
+    let auditLog = []; // Audit trail
+    
+    let users = [
+        { 
+            id: 1, 
+            email: 'admin@company.com', 
+            password: 'admin123', 
+            name: 'Vadybininkas (Admin)', 
+            role: 'admin', 
+            department: 'Vadyba',
+            permissions: ['create', 'read', 'update', 'delete', 'approve', 'reject', 'manage_users', 'reports', 'manage_suppliers', 'manage_products', 'view_audit']
+        },
+        { 
+            id: 2, 
+            email: 'tech@company.com', 
+            password: 'tech123', 
+            name: 'Techninis Direktorius', 
+            role: 'tech_director', 
+            department: 'Techninė',
+            permissions: ['create', 'read', 'update', 'manage_orders', 'add_comments', 'manage_products']
+        },
+        { 
+            id: 3, 
+            email: 'director@company.com', 
+            password: 'director123', 
+            name: 'Direktorius', 
+            role: 'director', 
+            department: 'Vadyba',
+            permissions: ['read', 'approve', 'reject', 'return_for_clarification', 'add_comments', 'view_reports', 'director_dashboard']
+        },
+        { 
+            id: 4, 
+            email: 'employee@company.com', 
+            password: 'employee123', 
+            name: 'Prekių Specialistas', 
+            role: 'employee', 
+            department: 'Pirkimai',
+            permissions: ['create', 'read', 'update_own', 'add_comments']
+        }
+    ];
+
+    // Order status workflow: Draft → Submitted → Director Approved → Ordered from Supplier → Delivered → Completed
+    const ORDER_STATUSES = {
+        'draft': { name: 'Juodraštis', color: 'gray', next: ['submitted'] },
+        'submitted': { name: 'Pateiktas tvirtinti', color: 'blue', next: ['director_approved', 'rejected', 'returned'] },
+        'director_approved': { name: 'Patvirtintas (direktoriaus)', color: 'green', next: ['ordered_from_supplier', 'rejected'] },
+        'ordered_from_supplier': { name: 'Užsakytas tiekėjui', color: 'purple', next: ['delivered', 'cancelled'] },
+        'delivered': { name: 'Pristatytas/išdalintas', color: 'indigo', next: ['completed'] },
+        'completed': { name: 'Užbaigtas', color: 'emerald', next: [] },
+        'rejected': { name: 'Atmestas', color: 'red', next: ['draft'] },
+        'returned': { name: 'Grąžintas pataisymui', color: 'yellow', next: ['submitted'] },
+        'cancelled': { name: 'Atšauktas', color: 'gray', next: [] }
+    };
+
+    // Initialize enhanced procurement system data
+    function initializeData() {
+        // Load users
+        const savedUsers = localStorage.getItem('procurement_users');
+        if (savedUsers) {
+            try {
+                users = JSON.parse(savedUsers);
+            } catch (e) {
+                console.error('Error loading users:', e);
+            }
+        } else {
+            localStorage.setItem('procurement_users', JSON.stringify(users));
+        }
+
+        // Initialize suppliers
+        const savedSuppliers = localStorage.getItem('procurement_suppliers');
+        if (savedSuppliers) {
+            try {
+                suppliers = JSON.parse(savedSuppliers);
+            } catch (e) {
+                console.error('Error loading suppliers:', e);
+                suppliers = [];
+            }
+        } else {
+            suppliers = [
+                {
+                    id: 1,
+                    name: 'UAB "Biuro prekyba"',
+                    contact_person: 'Jonas Jonaitis',
+                    email: 'jonas@biuroprekyba.lt',
+                    phone: '+370 600 12345',
+                    address: 'Gedimino pr. 1, Vilnius',
+                    vat_code: 'LT123456789',
+                    payment_terms: '30 dienų',
+                    category: 'Biuro prekės',
+                    status: 'active',
+                    created_at: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    name: 'UAB "IT sprendimai"',
+                    contact_person: 'Petras Petraitis',
+                    email: 'petras@itsprendimai.lt',
+                    phone: '+370 600 54321',
+                    address: 'Konstitucijos pr. 15, Vilnius',
+                    vat_code: 'LT987654321',
+                    payment_terms: '14 dienų',
+                    category: 'IT įranga',
+                    status: 'active',
+                    created_at: new Date().toISOString()
+                }
+            ];
+            localStorage.setItem('procurement_suppliers', JSON.stringify(suppliers));
+        }
+
+        // Initialize products catalog
+        const savedProducts = localStorage.getItem('procurement_products');
+        if (savedProducts) {
+            try {
+                products = JSON.parse(savedProducts);
+            } catch (e) {
+                console.error('Error loading products:', e);
+                products = [];
+            }
+        } else {
+            products = [
+                {
+                    id: 1,
+                    sku: 'BIU-001',
+                    name: 'A4 popierius baltumas 80%',
+                    description: 'Aukštos kokybės biuro popierius spausdinimui',
+                    category: 'Biuro prekės',
+                    supplier_id: 1,
+                    unit_price: 5.99,
+                    vat_rate: 0.21,
+                    discount: 0.00,
+                    unit: 'pak.',
+                    min_quantity: 5,
+                    status: 'active',
+                    created_at: new Date().toISOString()
+                },
+                {
+                    id: 2,
+                    sku: 'BIU-002',
+                    name: 'Rašikliai mėlyni',
+                    description: 'Klasikiniai mėlyni rašikliai biurui',
+                    category: 'Biuro prekės',
+                    supplier_id: 1,
+                    unit_price: 1.50,
+                    vat_rate: 0.21,
+                    discount: 0.05,
+                    unit: 'vnt.',
+                    min_quantity: 10,
+                    status: 'active',
+                    created_at: new Date().toISOString()
+                },
+                {
+                    id: 3,
+                    sku: 'IT-001',
+                    name: 'Dell Laptop Latitude 5520',
+                    description: 'Verslo klasės nešiojamas kompiuteris',
+                    category: 'IT įranga',
+                    supplier_id: 2,
+                    unit_price: 899.99,
+                    vat_rate: 0.21,
+                    discount: 0.10,
+                    unit: 'vnt.',
+                    min_quantity: 1,
+                    status: 'active',
+                    created_at: new Date().toISOString()
+                }
+            ];
+            localStorage.setItem('procurement_products', JSON.stringify(products));
+        }
+
+        // Initialize orders (enhanced from requests)
+        const savedOrders = localStorage.getItem('procurement_orders');
+        if (savedOrders) {
+            try {
+                orders = JSON.parse(savedOrders);
+            } catch (e) {
+                console.error('Error loading orders:', e);
+                orders = [];
+            }
+        } else {
+            orders = [
+                {
+                    id: 1,
+                    order_number: 'ORD-2024-001',
+                    title: 'Biuro reikmenų užsakymas',
+                    description: 'Mėnesio biuro reikmenų užsakymas',
+                    status: 'submitted',
+                    priority: 'medium',
+                    user_id: 4,
+                    department: 'Pirkimai',
+                    expected_delivery: new Date(Date.now() + 14 * 86400000).toISOString(),
+                    created_at: new Date(Date.now() - 86400000).toISOString(),
+                    updated_at: new Date(Date.now() - 86400000).toISOString(),
+                    items: [
+                        { 
+                            product_id: 1,
+                            product_name: 'A4 popierius baltumas 80%',
+                            sku: 'BIU-001',
+                            quantity: 10, 
+                            unit_price: 5.99,
+                            discount: 0.00,
+                            vat_rate: 0.21,
+                            net_amount: 59.90,
+                            vat_amount: 12.58,
+                            total_amount: 72.48,
+                            supplier_id: 1
+                        },
+                        { 
+                            product_id: 2,
+                            product_name: 'Rašikliai mėlyni',
+                            sku: 'BIU-002',
+                            quantity: 20, 
+                            unit_price: 1.50,
+                            discount: 0.05,
+                            vat_rate: 0.21,
+                            net_amount: 28.50,
+                            vat_amount: 5.99,
+                            total_amount: 34.49,
+                            supplier_id: 1
+                        }
+                    ],
+                    totals: {
+                        net_amount: 88.40,
+                        vat_amount: 18.57,
+                        total_amount: 106.97
+                    }
+                },
+                {
+                    id: 2,
+                    order_number: 'ORD-2024-002',
+                    title: 'IT įrangos atnaujinimas',
+                    description: 'Nauji kompiuteriai darbuotojams',
+                    status: 'director_approved',
+                    priority: 'high',
+                    user_id: 2,
+                    department: 'Techninė',
+                    expected_delivery: new Date(Date.now() + 30 * 86400000).toISOString(),
+                    created_at: new Date(Date.now() - 172800000).toISOString(),
+                    updated_at: new Date(Date.now() - 86400000).toISOString(),
+                    items: [
+                        { 
+                            product_id: 3,
+                            product_name: 'Dell Laptop Latitude 5520',
+                            sku: 'IT-001',
+                            quantity: 3, 
+                            unit_price: 899.99,
+                            discount: 0.10,
+                            vat_rate: 0.21,
+                            net_amount: 2429.97,
+                            vat_amount: 510.29,
+                            total_amount: 2940.26,
+                            supplier_id: 2
+                        }
+                    ],
+                    totals: {
+                        net_amount: 2429.97,
+                        vat_amount: 510.29,
+                        total_amount: 2940.26
+                    }
+                }
+            ];
+            localStorage.setItem('procurement_orders', JSON.stringify(orders));
+        }
+
+        // Initialize comments
+        const savedComments = localStorage.getItem('procurement_comments');
+        if (savedComments) {
+            try {
+                comments = JSON.parse(savedComments);
+            } catch (e) {
+                console.error('Error loading comments:', e);
+                comments = [];
+            }
+        } else {
+            comments = [
+                {
+                    id: 1,
+                    order_id: 1,
+                    user_id: 4,
+                    user_name: 'Prekių Specialistas',
+                    comment: 'Užsakymas sukurtas pagal mėnesio poreikių planą',
+                    type: 'general',
+                    created_at: new Date(Date.now() - 86400000).toISOString()
+                },
+                {
+                    id: 2,
+                    order_id: 2,
+                    user_id: 2,
+                    user_name: 'Techninis Direktorius',
+                    comment: 'Būtina įsigyti iki metų pabaigos',
+                    type: 'urgent',
+                    created_at: new Date(Date.now() - 172800000).toISOString()
+                }
+            ];
+            localStorage.setItem('procurement_comments', JSON.stringify(comments));
+        }
+
+        // Initialize attachments
+        const savedAttachments = localStorage.getItem('procurement_attachments');
+        if (savedAttachments) {
+            try {
+                attachments = JSON.parse(savedAttachments);
+            } catch (e) {
+                console.error('Error loading attachments:', e);
+                attachments = [];
+            }
+        } else {
+            attachments = [];
+            localStorage.setItem('procurement_attachments', JSON.stringify(attachments));
+        }
+
+        // Initialize audit log
+        const savedAuditLog = localStorage.getItem('procurement_audit_log');
+        if (savedAuditLog) {
+            try {
+                auditLog = JSON.parse(savedAuditLog);
+            } catch (e) {
+                console.error('Error loading audit log:', e);
+                auditLog = [];
+            }
+        } else {
+            auditLog = [];
+            localStorage.setItem('procurement_audit_log', JSON.stringify(auditLog));
+        }
+    }
+
+    function hasPermission(permission) {
+        return currentUser && currentUser.permissions && currentUser.permissions.includes(permission);
+    }
+
+    // Audit logging system
+    function logAuditEvent(action, entity_type, entity_id, details = {}) {
+        if (!currentUser) return;
+        
+        const auditEntry = {
+            id: Date.now(),
+            user_id: currentUser.id,
+            user_name: currentUser.name,
+            action: action, // create, update, delete, approve, reject, etc.
+            entity_type: entity_type, // order, product, supplier, user, etc.
+            entity_id: entity_id,
+            details: details,
+            timestamp: new Date().toISOString(),
+            ip_address: 'localhost', // In real system would capture actual IP
+            user_agent: navigator.userAgent.substring(0, 100)
+        };
+        
+        auditLog.push(auditEntry);
+        localStorage.setItem('procurement_audit_log', JSON.stringify(auditLog));
+    }
+
+    // Calculate order totals with VAT and discounts
+    function calculateOrderTotals(items) {
+        let net_amount = 0;
+        let vat_amount = 0;
+        let total_amount = 0;
+
+        items.forEach(item => {
+            const itemNetAmount = item.quantity * item.unit_price * (1 - (item.discount || 0));
+            const itemVatAmount = itemNetAmount * (item.vat_rate || 0);
+            const itemTotalAmount = itemNetAmount + itemVatAmount;
+
+            item.net_amount = Math.round(itemNetAmount * 100) / 100;
+            item.vat_amount = Math.round(itemVatAmount * 100) / 100;
+            item.total_amount = Math.round(itemTotalAmount * 100) / 100;
+
+            net_amount += item.net_amount;
+            vat_amount += item.vat_amount;
+            total_amount += item.total_amount;
+        });
+
+        return {
+            net_amount: Math.round(net_amount * 100) / 100,
+            vat_amount: Math.round(vat_amount * 100) / 100,
+            total_amount: Math.round(total_amount * 100) / 100
+        };
+    }
+
+    // Generate unique order number
+    function generateOrderNumber() {
+        const year = new Date().getFullYear();
+        const existingNumbers = orders
+            .map(o => o.order_number)
+            .filter(num => num && num.startsWith(`ORD-${year}-`))
+            .map(num => parseInt(num.split('-')[2]))
+            .filter(num => !isNaN(num));
+        
+        const nextNumber = existingNumbers.length > 0 ? Math.max(...existingNumbers) + 1 : 1;
+        return `ORD-${year}-${String(nextNumber).padStart(3, '0')}`;
+    }
+
+    // Enhanced Orders Management with 6-status workflow
+    function showOrders() {
+        let userOrders = orders;
+        if (currentUser.role === 'employee') {
+            userOrders = orders.filter(o => o.user_id === currentUser.id);
+        }
+
+        // Enhanced status colors and labels
+        const statusColors = {
+            draft: 'bg-gray-100 text-gray-800',
+            submitted: 'bg-blue-100 text-blue-800',
+            director_approved: 'bg-green-100 text-green-800',
+            ordered_from_supplier: 'bg-purple-100 text-purple-800',
+            delivered: 'bg-indigo-100 text-indigo-800',
+            completed: 'bg-emerald-100 text-emerald-800',
+            rejected: 'bg-red-100 text-red-800',
+            returned: 'bg-yellow-100 text-yellow-800',
+            cancelled: 'bg-gray-200 text-gray-600'
+        };
+        
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold">Užsakymai (${userOrders.length})</h3>
+                    <div class="flex space-x-2">
+                        ${hasPermission('create') ? `
+                            <button type="button" onclick="showCreateOrderForm()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                                <i class="fas fa-plus mr-2"></i>Naujas užsakymas
+                            </button>
+                        ` : ''}
+                        <select onchange="filterOrders(this.value)" class="px-3 py-2 border border-gray-300 rounded-md">
+                            <option value="">Visi statusai</option>
+                            <option value="draft">Juodraščiai</option>
+                            <option value="submitted">Pateikti</option>
+                            <option value="director_approved">Patvirtinti</option>
+                            <option value="ordered_from_supplier">Užsakyti tiekėjui</option>
+                            <option value="delivered">Pristatyti</option>
+                            <option value="completed">Užbaigti</option>
+                        </select>
+                    </div>
+                </div>
+                
+                ${userOrders.length === 0 ? 
+                    '<div class="text-center py-8 text-gray-500"><i class="fas fa-shopping-cart text-4xl mb-4"></i><p>Užsakymų nėra</p></div>' :
+                    userOrders.map(order => {
+                        const user = users.find(u => u.id === order.user_id);
+                        const supplier = suppliers.find(s => s.id === (order.items[0]?.supplier_id || 0));
+                        const commentsCount = comments.filter(c => c.order_id === order.id).length;
+                        
+                        return `
+                            <div class="border rounded-lg p-4 mb-4 hover:shadow-md transition-shadow" id="order-${order.id}">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-4 mb-2">
+                                            <h4 class="font-medium text-lg">${order.title}</h4>
+                                            <span class="text-sm text-gray-500 font-mono">${order.order_number}</span>
+                                            <span class="px-3 py-1 rounded-full text-xs font-medium ${statusColors[order.status]}">
+                                                ${ORDER_STATUSES[order.status]?.name || order.status}
+                                            </span>
+                                            ${order.priority ? `
+                                                <span class="px-2 py-1 rounded text-xs ${order.priority === 'high' ? 'bg-red-100 text-red-700' : order.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-700'}">
+                                                    ${order.priority === 'high' ? 'Aukštas' : order.priority === 'medium' ? 'Vidutinis' : 'Žemas'}
+                                                </span>
+                                            ` : ''}
+                                        </div>
+                                        <p class="text-gray-600 text-sm mb-2">${order.description}</p>
+                                        <div class="text-sm text-gray-600 mb-3">
+                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                <span><strong>Sukūrė:</strong> ${user ? user.name : 'Nežinomas'}</span>
+                                                <span><strong>Skyrius:</strong> ${order.department}</span>
+                                                <span><strong>Sukurta:</strong> ${new Date(order.created_at).toLocaleDateString('lt-LT')}</span>
+                                                <span><strong>Atnaujinta:</strong> ${new Date(order.updated_at).toLocaleDateString('lt-LT')}</span>
+                                            </div>
+                                            ${order.expected_delivery ? `
+                                                <div class="mt-2">
+                                                    <span><strong>Tikėtinas pristatymas:</strong> ${new Date(order.expected_delivery).toLocaleDateString('lt-LT')}</span>
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Order Items Summary -->
+                                <div class="bg-gray-50 rounded-lg p-3 mb-3">
+                                    <div class="grid grid-cols-3 gap-4 text-sm">
+                                        <div>
+                                            <span class="text-gray-600">Prekių:</span>
+                                            <span class="font-medium">${order.items ? order.items.length : 0}</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Suma be PVM:</span>
+                                            <span class="font-medium">€${order.totals ? order.totals.net_amount.toFixed(2) : '0.00'}</span>
+                                        </div>
+                                        <div>
+                                            <span class="text-gray-600">Bendra suma:</span>
+                                            <span class="font-bold text-lg">€${order.totals ? order.totals.total_amount.toFixed(2) : '0.00'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Comments & Attachments Info -->
+                                ${commentsCount > 0 ? `
+                                    <div class="flex items-center gap-4 mb-3 text-sm text-gray-600">
+                                        <span><i class="fas fa-comments mr-1"></i>${commentsCount} komentarai</span>
+                                    </div>
+                                ` : ''}
+                                
+                                <!-- Action Buttons -->
+                                <div class="flex flex-wrap gap-2">
+                                    <button type="button" onclick="viewOrder(${order.id})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                        <i class="fas fa-eye mr-1"></i>Peržiūrėti
+                                    </button>
+                                    
+                                    ${(hasPermission('update') || (hasPermission('update_own') && order.user_id === currentUser.id)) && ['draft', 'returned'].includes(order.status) ? `
+                                        <button type="button" onclick="editOrder(${order.id})" class="bg-yellow-600 text-white px-3 py-1 rounded text-sm hover:bg-yellow-700">
+                                            <i class="fas fa-edit mr-1"></i>Redaguoti
+                                        </button>
+                                    ` : ''}
+                                    
+                                    ${hasPermission('add_comments') ? `
+                                        <button type="button" onclick="showOrderComments(${order.id})" class="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700">
+                                            <i class="fas fa-comments mr-1"></i>Komentarai
+                                        </button>
+                                    ` : ''}
+                                    
+                                    <!-- Status Change Actions -->
+                                    ${getStatusChangeButtons(order)}
+                                    
+                                    ${hasPermission('delete') && order.status === 'draft' ? `
+                                        <button type="button" onclick="deleteOrder(${order.id})" class="bg-red-800 text-white px-3 py-1 rounded text-sm hover:bg-red-900">
+                                            <i class="fas fa-trash mr-1"></i>Ištrinti
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')
+                }
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    // Generate status change buttons based on current status and user permissions
+    function getStatusChangeButtons(order) {
+        const buttons = [];
+        const nextStatuses = ORDER_STATUSES[order.status]?.next || [];
+        
+        nextStatuses.forEach(nextStatus => {
+            let buttonClass = 'bg-gray-600';
+            let actionText = '';
+            let permission = '';
+            
+            switch (nextStatus) {
+                case 'submitted':
+                    buttonClass = 'bg-blue-600 hover:bg-blue-700';
+                    actionText = 'Pateikti tvirtinti';
+                    permission = 'create';
+                    break;
+                case 'director_approved':
+                    buttonClass = 'bg-green-600 hover:bg-green-700';
+                    actionText = 'Patvirtinti';
+                    permission = 'approve';
+                    break;
+                case 'ordered_from_supplier':
+                    buttonClass = 'bg-purple-600 hover:bg-purple-700';
+                    actionText = 'Užsakyti tiekėjui';
+                    permission = 'manage_orders';
+                    break;
+                case 'delivered':
+                    buttonClass = 'bg-indigo-600 hover:bg-indigo-700';
+                    actionText = 'Pažymėti pristatytą';
+                    permission = 'manage_orders';
+                    break;
+                case 'completed':
+                    buttonClass = 'bg-emerald-600 hover:bg-emerald-700';
+                    actionText = 'Užbaigti';
+                    permission = 'manage_orders';
+                    break;
+                case 'rejected':
+                    buttonClass = 'bg-red-600 hover:bg-red-700';
+                    actionText = 'Atmesti';
+                    permission = 'reject';
+                    break;
+                case 'returned':
+                    buttonClass = 'bg-yellow-600 hover:bg-yellow-700';
+                    actionText = 'Grąžinti pataisymui';
+                    permission = 'return_for_clarification';
+                    break;
+            }
+            
+            if (hasPermission(permission) || hasPermission('manage_users')) {
+                buttons.push(`
+                    <button type="button" onclick="changeOrderStatus(${order.id}, '${nextStatus}')" 
+                            class="${buttonClass} text-white px-3 py-1 rounded text-sm">
+                        <i class="fas fa-arrow-right mr-1"></i>${actionText}
+                    </button>
+                `);
+            }
+        });
+        
+        return buttons.join('');
+    }
+
+    // Products Management System
+    function showProducts() {
+        if (!hasPermission('manage_products') && !hasPermission('manage_users')) {
+            document.getElementById('content-area').innerHTML = `
+                <div class="bg-white border rounded-lg p-6 text-center">
+                    <i class="fas fa-lock text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600">Neturite prieigos prie produktų valdymo.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold">Produktų katalogas (${products.length})</h3>
+                    <div class="flex space-x-2">
+                        <button type="button" onclick="showCreateProductForm()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                            <i class="fas fa-plus mr-2"></i>Naujas produktas
+                        </button>
+                        <input type="text" placeholder="Ieškoti produktų..." onkeyup="searchProducts(this.value)" 
+                               class="px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                </div>
+                
+                ${products.length === 0 ? 
+                    '<div class="text-center py-8 text-gray-500"><i class="fas fa-box text-4xl mb-4"></i><p>Produktų nėra</p></div>' :
+                    `<div class="overflow-x-auto">
+                        <table class="w-full border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50">
+                                    <th class="text-left p-3 border">SKU</th>
+                                    <th class="text-left p-3 border">Produktas</th>
+                                    <th class="text-left p-3 border">Kategorija</th>
+                                    <th class="text-left p-3 border">Tiekėjas</th>
+                                    <th class="text-right p-3 border">Kaina</th>
+                                    <th class="text-right p-3 border">Nuolaida</th>
+                                    <th class="text-right p-3 border">PVM</th>
+                                    <th class="text-center p-3 border">Statusas</th>
+                                    <th class="text-center p-3 border">Veiksmai</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table-body">
+                                ${products.map(product => {
+                                    const supplier = suppliers.find(s => s.id === product.supplier_id);
+                                    const finalPrice = product.unit_price * (1 - product.discount);
+                                    const priceWithVat = finalPrice * (1 + product.vat_rate);
+                                    
+                                    return `
+                                        <tr class="hover:bg-gray-50" id="product-row-${product.id}">
+                                            <td class="p-3 border font-mono text-sm">${product.sku}</td>
+                                            <td class="p-3 border">
+                                                <div class="font-medium">${product.name}</div>
+                                                <div class="text-xs text-gray-500">${product.description}</div>
+                                                <div class="text-xs text-gray-400">Min. kiekis: ${product.min_quantity} ${product.unit}</div>
+                                            </td>
+                                            <td class="p-3 border text-sm">${product.category}</td>
+                                            <td class="p-3 border text-sm">${supplier ? supplier.name : 'Nežinomas'}</td>
+                                            <td class="p-3 border text-right">
+                                                <div class="font-medium">€${finalPrice.toFixed(2)}</div>
+                                                ${product.discount > 0 ? `<div class="text-xs text-gray-500 line-through">€${product.unit_price.toFixed(2)}</div>` : ''}
+                                            </td>
+                                            <td class="p-3 border text-right text-sm">
+                                                ${product.discount > 0 ? `${(product.discount * 100).toFixed(0)}%` : '-'}
+                                            </td>
+                                            <td class="p-3 border text-right">
+                                                <div class="text-sm">€${priceWithVat.toFixed(2)}</div>
+                                                <div class="text-xs text-gray-500">${(product.vat_rate * 100).toFixed(0)}% PVM</div>
+                                            </td>
+                                            <td class="p-3 border text-center">
+                                                <span class="px-2 py-1 rounded-full text-xs ${product.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}">
+                                                    ${product.status === 'active' ? 'Aktyvus' : 'Neaktyvus'}
+                                                </span>
+                                            </td>
+                                            <td class="p-3 border text-center">
+                                                <div class="flex justify-center space-x-1">
+                                                    <button onclick="editProduct(${product.id})" class="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button onclick="toggleProductStatus(${product.id})" class="bg-yellow-600 text-white px-2 py-1 rounded text-xs hover:bg-yellow-700">
+                                                        <i class="fas fa-toggle-${product.status === 'active' ? 'on' : 'off'}"></i>
+                                                    </button>
+                                                    <button onclick="deleteProduct(${product.id})" class="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `;
+                                }).join('')}
+                            </tbody>
+                        </table>
+                    </div>`
+                }
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    // Suppliers Management System
+    function showSuppliers() {
+        if (!hasPermission('manage_suppliers') && !hasPermission('manage_users')) {
+            document.getElementById('content-area').innerHTML = `
+                <div class="bg-white border rounded-lg p-6 text-center">
+                    <i class="fas fa-lock text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600">Neturite prieigos prie tiekėjų valdymo.</p>
+                </div>
+            `;
+            return;
+        }
+
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold">Tiekėjų valdymas (${suppliers.length})</h3>
+                    <div class="flex space-x-2">
+                        <button type="button" onclick="showCreateSupplierForm()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                            <i class="fas fa-plus mr-2"></i>Naujas tiekėjas
+                        </button>
+                        <input type="text" placeholder="Ieškoti tiekėjų..." onkeyup="searchSuppliers(this.value)" 
+                               class="px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                </div>
+                
+                ${suppliers.length === 0 ? 
+                    '<div class="text-center py-8 text-gray-500"><i class="fas fa-truck text-4xl mb-4"></i><p>Tiekėjų nėra</p></div>' :
+                    `<div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4" id="suppliers-grid">
+                        ${suppliers.map(supplier => `
+                            <div class="border rounded-lg p-4 hover:shadow-md transition-shadow" id="supplier-${supplier.id}">
+                                <div class="flex justify-between items-start mb-3">
+                                    <h4 class="font-medium text-lg">${supplier.name}</h4>
+                                    <span class="px-2 py-1 rounded-full text-xs ${supplier.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}">
+                                        ${supplier.status === 'active' ? 'Aktyvus' : 'Neaktyvus'}
+                                    </span>
+                                </div>
+                                
+                                <div class="space-y-2 text-sm text-gray-600 mb-4">
+                                    <div><i class="fas fa-user mr-2"></i>${supplier.contact_person}</div>
+                                    <div><i class="fas fa-envelope mr-2"></i>${supplier.email}</div>
+                                    <div><i class="fas fa-phone mr-2"></i>${supplier.phone}</div>
+                                    <div><i class="fas fa-map-marker-alt mr-2"></i>${supplier.address}</div>
+                                    <div><i class="fas fa-building mr-2"></i>PVM: ${supplier.vat_code}</div>
+                                    <div><i class="fas fa-calendar mr-2"></i>Mokėjimo terminai: ${supplier.payment_terms}</div>
+                                    <div><i class="fas fa-tag mr-2"></i>${supplier.category}</div>
+                                </div>
+                                
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs text-gray-400">
+                                        Sukurta: ${new Date(supplier.created_at).toLocaleDateString('lt-LT')}
+                                    </span>
+                                    <div class="flex space-x-1">
+                                        <button onclick="editSupplier(${supplier.id})" class="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button onclick="toggleSupplierStatus(${supplier.id})" class="bg-yellow-600 text-white px-2 py-1 rounded text-xs hover:bg-yellow-700">
+                                            <i class="fas fa-toggle-${supplier.status === 'active' ? 'on' : 'off'}"></i>
+                                        </button>
+                                        <button onclick="deleteSupplier(${supplier.id})" class="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>`
+                }
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    function quickLogin(email, password) {
+        document.getElementById('email').value = email;
+        document.getElementById('password').value = password;
+        login();
+    }
+
+    function login() {
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        
+        console.log('Attempting login with:', email, password); // Debug
+        
+        if (!email || !password) {
+            alert('Prašome įvesti el. paštą ir slaptažodį');
+            return;
+        }
+        
+        const user = users.find(u => u.email === email && u.password === password);
+        console.log('Found user:', user); // Debug
+        
+        if (user) {
+            currentUser = user;
+            console.log('Login successful, current user:', currentUser); // Debug
+            showDashboard();
+            updateDashboardStats();
+        } else {
+            alert('Neteisingi prisijungimo duomenys');
+            console.log('Available users:', users); // Debug
+        }
+    }
+
+    function showDashboard() {
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('dashboard-section').classList.remove('hidden');
+        
+        const roleColors = {
+            admin: 'text-red-600 bg-red-100',
+            tech_director: 'text-blue-600 bg-blue-100',
+            director: 'text-purple-600 bg-purple-100',
+            employee: 'text-green-600 bg-green-100'
+        };
+        
+        document.getElementById('user-info').innerHTML = `
+            <div class="mt-2">
+                <span class="font-medium">${currentUser.name}</span> | 
+                <span class="text-sm px-2 py-1 rounded-full ${roleColors[currentUser.role]}">${currentUser.role}</span> | 
+                <span class="text-sm text-gray-500">${currentUser.department}</span>
+            </div>
+        `;
+
+        // Show admin panel for admin users
+        if (hasPermission('manage_users')) {
+            document.getElementById('admin-panel').classList.remove('hidden');
+        }
+
+        // Show director dashboard button for directors and admins
+        if (hasPermission('director_dashboard') || hasPermission('manage_users')) {
+            document.getElementById('director-dashboard-btn').style.display = 'block';
+        }
+
+        // Update navigation counts
+        updateDashboardStats();
+    }
+
+    function updateDashboardStats() {
+        let userOrders = orders;
+        if (currentUser.role === 'employee') {
+            userOrders = orders.filter(o => o.user_id === currentUser.id);
+        }
+        
+        // Count orders by status
+        const draftCount = userOrders.filter(o => o.status === 'draft').length;
+        const submittedCount = userOrders.filter(o => o.status === 'submitted').length;
+        const approvedCount = userOrders.filter(o => o.status === 'director_approved').length;
+        const orderedCount = userOrders.filter(o => o.status === 'ordered_from_supplier').length;
+        const deliveredCount = userOrders.filter(o => o.status === 'delivered').length;
+        const completedCount = userOrders.filter(o => o.status === 'completed').length;
+        
+        // Update dashboard counters
+        document.getElementById('draft-count').textContent = draftCount;
+        document.getElementById('submitted-count').textContent = submittedCount;
+        document.getElementById('approved-count').textContent = approvedCount;
+        document.getElementById('ordered-count').textContent = orderedCount;
+        document.getElementById('delivered-count').textContent = deliveredCount;
+        document.getElementById('completed-count').textContent = completedCount;
+        
+        // Update navigation counters
+        document.getElementById('orders-count').textContent = `${userOrders.length} užsakymų`;
+        document.getElementById('products-count').textContent = `${products.length} produktų`;
+        document.getElementById('suppliers-count').textContent = `${suppliers.length} tiekėjų`;
+    }
+
+    function showRequests() {
+        let userRequests = requests;
+        if (currentUser.role === 'employee') {
+            userRequests = requests.filter(r => r.user_id === currentUser.id);
+        }
+
+        const statusColors = {
+            draft: 'bg-gray-100 text-gray-800',
+            pending: 'bg-yellow-100 text-yellow-800',
+            approved: 'bg-green-100 text-green-800',
+            rejected: 'bg-red-100 text-red-800',
+            clarification_needed: 'bg-orange-100 text-orange-800'
+        };
+
+        const statusLabels = {
+            draft: 'Juodraštis',
+            pending: 'Laukia patvirtinimo',
+            approved: 'Patvirtinta',
+            rejected: 'Atmesta',
+            clarification_needed: 'Reikia patikslinti'
+        };
+        
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold">Užklausos (${userRequests.length})</h3>
+                    ${hasPermission('create') ? `
+                        <button type="button" onclick="showCreateForm()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                            <i class="fas fa-plus mr-2"></i>Nauja užklausa
+                        </button>
+                    ` : ''}
+                </div>
+                
+                ${userRequests.length === 0 ? 
+                    '<div class="text-center py-8 text-gray-500"><i class="fas fa-inbox text-4xl mb-4"></i><p>Užklausų nėra</p></div>' :
+                    userRequests.map(req => {
+                        const user = users.find(u => u.id === req.user_id);
+                        const totalValue = req.items ? req.items.reduce((sum, item) => sum + (item.total_price || 0), 0) : 0;
+                        
+                        return `
+                            <div class="border rounded-lg p-4 mb-4 hover:shadow-md transition-shadow">
+                                <div class="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h4 class="font-medium text-lg">${req.title}</h4>
+                                        <p class="text-gray-600 text-sm">${req.description}</p>
+                                        ${req.rejected_reason ? `<p class="text-red-600 text-sm mt-1"><strong>Atmetimo priežastis:</strong> ${req.rejected_reason}</p>` : ''}
+                                        ${req.clarification_note ? `<p class="text-orange-600 text-sm mt-1"><strong>Patikslinimo pastaba:</strong> ${req.clarification_note}</p>` : ''}
+                                    </div>
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium ${statusColors[req.status]}">${statusLabels[req.status]}</span>
+                                </div>
+                                
+                                <div class="grid md:grid-cols-3 gap-4 text-sm text-gray-600 mb-3">
+                                    <div><i class="fas fa-user mr-1"></i>Sukūrė: ${user ? user.name : 'Nežinomas'}</div>
+                                    <div><i class="fas fa-calendar mr-1"></i>Data: ${new Date(req.created_at).toLocaleDateString('lt-LT')}</div>
+                                    <div><i class="fas fa-euro-sign mr-1"></i>Suma: €${totalValue.toFixed(2)}</div>
+                                </div>
+                                
+                                ${req.items && req.items.length > 0 ? `
+                                    <div class="bg-gray-50 rounded p-3">
+                                        <div class="text-sm font-medium mb-2">Prekės (${req.items.length}):</div>
+                                        ${req.items.map(item => `
+                                            <div class="flex justify-between text-xs text-gray-600 mb-1">
+                                                <span>${item.product} × ${item.quantity}</span>
+                                                <span>€${(item.total_price || 0).toFixed(2)}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                ` : ''}
+                                
+                                <div class="flex justify-end mt-3 space-x-2">
+                                    ${hasPermission('approve') && req.status === 'pending' ? `
+                                        <button type="button" onclick="updateRequestStatus(${req.id}, 'approved')" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                                            <i class="fas fa-check mr-1"></i>Patvirtinti
+                                        </button>
+                                        <button type="button" onclick="requestClarification(${req.id})" class="bg-orange-600 text-white px-3 py-1 rounded text-sm hover:bg-orange-700">
+                                            <i class="fas fa-question mr-1"></i>Grąžinti tikslinti
+                                        </button>
+                                        <button type="button" onclick="rejectRequest(${req.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                            <i class="fas fa-times mr-1"></i>Atmesti
+                                        </button>
+                                    ` : ''}
+                                    ${hasPermission('update') || (hasPermission('update_own') && req.user_id === currentUser.id) ? `
+                                        <button type="button" onclick="editRequest(${req.id})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                            <i class="fas fa-edit mr-1"></i>Redaguoti
+                                        </button>
+                                    ` : ''}
+                                    ${hasPermission('delete') ? `
+                                        <button type="button" onclick="deleteRequest(${req.id})" class="bg-red-800 text-white px-3 py-1 rounded text-sm hover:bg-red-900">
+                                            <i class="fas fa-trash mr-1"></i>Ištrinti
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')
+                }
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    // Director Dashboard with Advanced Order Tracking
+    function showDirectorDashboard() {
+        if (!hasPermission('director_dashboard') && !hasPermission('manage_users')) {
+            document.getElementById('content-area').innerHTML = `
+                <div class="bg-white border rounded-lg p-6 text-center">
+                    <i class="fas fa-lock text-4xl text-gray-400 mb-4"></i>
+                    <p class="text-gray-600">Neturite prieigos prie direktoriaus dashboard.</p>
+                </div>
+            `;
+            return;
+        }
+
+        // Advanced statistics calculation
+        const totalOrders = orders.length;
+        const awaitingApproval = orders.filter(o => o.status === 'submitted').length;
+        const approvedToday = orders.filter(o => o.status === 'director_approved' && 
+            new Date(o.updated_at).toDateString() === new Date().toDateString()).length;
+        
+        // Financial analysis
+        const totalValue = orders.reduce((sum, o) => sum + (o.totals?.total_amount || 0), 0);
+        const approvedValue = orders.filter(o => ['director_approved', 'ordered_from_supplier', 'delivered', 'completed'].includes(o.status))
+            .reduce((sum, o) => sum + (o.totals?.total_amount || 0), 0);
+        const pendingValue = orders.filter(o => o.status === 'submitted')
+            .reduce((sum, o) => sum + (o.totals?.total_amount || 0), 0);
+
+        // Department analysis
+        const departmentStats = {};
+        orders.forEach(order => {
+            if (!departmentStats[order.department]) {
+                departmentStats[order.department] = { count: 0, value: 0 };
+            }
+            departmentStats[order.department].count++;
+            departmentStats[order.department].value += order.totals?.total_amount || 0;
+        });
+
+        // Priority analysis
+        const highPriorityPending = orders.filter(o => o.status === 'submitted' && o.priority === 'high').length;
+        const overduePending = orders.filter(o => {
+            if (o.status !== 'submitted') return false;
+            const daysSinceSubmitted = Math.floor((Date.now() - new Date(o.updated_at).getTime()) / (1000 * 60 * 60 * 24));
+            return daysSinceSubmitted > 3; // More than 3 days pending
+        }).length;
+
+        const html = `
+            <div class="space-y-6">
+                <!-- Key Metrics Dashboard -->
+                <div class="bg-white border rounded-lg p-6">
+                    <h3 class="text-lg font-semibold mb-6">
+                        <i class="fas fa-tachometer-alt mr-2 text-indigo-600"></i>
+                        Direktoriaus valdymo skydas
+                    </h3>
+                    
+                    <div class="grid md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-gradient-to-r from-red-500 to-red-600 text-white p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-sm opacity-75">Laukia patvirtinimo</div>
+                                    <div class="text-2xl font-bold">${awaitingApproval}</div>
+                                    ${highPriorityPending > 0 ? `<div class="text-xs">⚠️ ${highPriorityPending} aukšto prioriteto</div>` : ''}
+                                </div>
+                                <i class="fas fa-exclamation-triangle text-2xl opacity-75"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-sm opacity-75">Vėluojantys</div>
+                                    <div class="text-2xl font-bold">${overduePending}</div>
+                                    <div class="text-xs">Daugiau nei 3 d.</div>
+                                </div>
+                                <i class="fas fa-clock text-2xl opacity-75"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-green-500 to-green-600 text-white p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-sm opacity-75">Patvirtinta šiandien</div>
+                                    <div class="text-2xl font-bold">${approvedToday}</div>
+                                    <div class="text-xs">Iš ${totalOrders} bendrai</div>
+                                </div>
+                                <i class="fas fa-check-circle text-2xl opacity-75"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-lg">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <div class="text-sm opacity-75">Laukianti vertė</div>
+                                    <div class="text-xl font-bold">€${pendingValue.toFixed(0)}</div>
+                                    <div class="text-xs">Reikia sprendimo</div>
+                                </div>
+                                <i class="fas fa-euro-sign text-2xl opacity-75"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending Orders Requiring Attention -->
+                <div class="bg-white border rounded-lg p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h4 class="text-lg font-medium">Užsakymai laukiantys patvirtinimo</h4>
+                        <div class="flex space-x-2">
+                            <select onchange="filterDirectorOrders(this.value)" class="px-3 py-2 border border-gray-300 rounded-md text-sm">
+                                <option value="">Visi</option>
+                                <option value="high">Aukštas prioritetas</option>
+                                <option value="overdue">Vėluojantys</option>
+                                <option value="today">Šiandien pateikti</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="director-orders-list">
+                        ${orders.filter(o => o.status === 'submitted').length === 0 ? 
+                            '<div class="text-center py-8 text-gray-500"><i class="fas fa-check-double text-4xl mb-4"></i><p>Visi užsakymai peržiūrėti!</p></div>' :
+                            orders.filter(o => o.status === 'submitted')
+                                .sort((a, b) => {
+                                    // Sort by priority first, then by submission date
+                                    const priorityOrder = { high: 3, medium: 2, low: 1 };
+                                    const aPriority = priorityOrder[a.priority] || 1;
+                                    const bPriority = priorityOrder[b.priority] || 1;
+                                    
+                                    if (aPriority !== bPriority) return bPriority - aPriority;
+                                    return new Date(a.updated_at) - new Date(b.updated_at);
+                                })
+                                .map(order => {
+                                    const user = users.find(u => u.id === order.user_id);
+                                    const daysSinceSubmitted = Math.floor((Date.now() - new Date(order.updated_at).getTime()) / (1000 * 60 * 60 * 24));
+                                    const isOverdue = daysSinceSubmitted > 3;
+                                    const isHighPriority = order.priority === 'high';
+                                    
+                                    return `
+                                        <div class="border rounded-lg p-4 mb-3 ${isOverdue ? 'border-red-300 bg-red-50' : isHighPriority ? 'border-orange-300 bg-orange-50' : 'hover:bg-gray-50'}">
+                                            <div class="flex justify-between items-start">
+                                                <div class="flex-1">
+                                                    <div class="flex items-center gap-3 mb-2">
+                                                        <h5 class="font-medium">${order.title}</h5>
+                                                        <span class="text-sm text-gray-500 font-mono">${order.order_number}</span>
+                                                        ${isHighPriority ? '<span class="px-2 py-1 bg-red-100 text-red-700 text-xs rounded">AUKŠTAS PRIORITETAS</span>' : ''}
+                                                        ${isOverdue ? '<span class="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded">VĖLUOJA</span>' : ''}
+                                                    </div>
+                                                    <p class="text-sm text-gray-600 mb-2">${order.description}</p>
+                                                    <div class="flex items-center gap-6 text-sm text-gray-500">
+                                                        <span>Sukūrė: ${user ? user.name : 'Nežinomas'}</span>
+                                                        <span>Skyrius: ${order.department}</span>
+                                                        <span>Pateikta: ${daysSinceSubmitted === 0 ? 'Šiandien' : `Prieš ${daysSinceSubmitted} d.`}</span>
+                                                        <span class="font-medium text-blue-600">Suma: €${order.totals?.total_amount.toFixed(2) || '0.00'}</span>
+                                                    </div>
+                                                </div>
+                                                <div class="flex space-x-2">
+                                                    <button onclick="viewOrder(${order.id})" class="bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700">
+                                                        <i class="fas fa-eye mr-1"></i>Peržiūrėti
+                                                    </button>
+                                                    <button onclick="quickApproveOrder(${order.id})" class="bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700">
+                                                        <i class="fas fa-check mr-1"></i>Patvirtinti
+                                                    </button>
+                                                    <button onclick="quickRejectOrder(${order.id})" class="bg-red-600 text-white px-3 py-2 rounded text-sm hover:bg-red-700">
+                                                        <i class="fas fa-times mr-1"></i>Atmesti
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')
+                        }
+                    </div>
+                </div>
+
+                <!-- Financial & Department Summary -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white border rounded-lg p-6">
+                        <h4 class="text-lg font-medium mb-4">Finansų apžvalga</h4>
+                        <div class="space-y-3">
+                            <div class="flex justify-between">
+                                <span>Bendra užsakymų vertė:</span>
+                                <span class="font-medium">€${totalValue.toFixed(2)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Patvirtinta vertė:</span>
+                                <span class="font-medium text-green-600">€${approvedValue.toFixed(2)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Laukia patvirtinimo:</span>
+                                <span class="font-medium text-yellow-600">€${pendingValue.toFixed(2)}</span>
+                            </div>
+                            <div class="flex justify-between pt-2 border-t">
+                                <span>Patvirtinimo lygis:</span>
+                                <span class="font-medium">${totalValue > 0 ? ((approvedValue / totalValue) * 100).toFixed(1) : 0}%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white border rounded-lg p-6">
+                        <h4 class="text-lg font-medium mb-4">Skyrių aktyvumas</h4>
+                        <div class="space-y-3">
+                            ${Object.entries(departmentStats).map(([dept, stats]) => `
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm">${dept}</span>
+                                    <div class="text-right">
+                                        <div class="font-medium">${stats.count} užsakymų</div>
+                                        <div class="text-xs text-gray-500">€${stats.value.toFixed(2)}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    // Advanced Reporting with PDF/Excel Export
+    function showReports() {
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold">
+                        <i class="fas fa-chart-bar mr-2 text-orange-600"></i>
+                        Išplėstinės ataskaitos ir eksportavimas
+                    </h3>
+                </div>
+                
+                <!-- Report Generation Controls -->
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="border rounded-lg p-4">
+                        <h4 class="font-medium mb-4">Ataskaitos parametrai</h4>
+                        <div class="space-y-3">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Laikotarpis</label>
+                                <select id="report-period" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <option value="all">Visas laikotarpis</option>
+                                    <option value="today">Šiandien</option>
+                                    <option value="week">Ši savaitė</option>
+                                    <option value="month">Šis mėnuo</option>
+                                    <option value="quarter">Šis ketvirtis</option>
+                                    <option value="year">Šie metai</option>
+                                    <option value="custom">Pasirinkti datą</option>
+                                </select>
+                            </div>
+                            
+                            <div id="custom-dates" class="hidden">
+                                <div class="grid grid-cols-2 gap-2">
+                                    <input type="date" id="start-date" class="px-3 py-2 border border-gray-300 rounded-md">
+                                    <input type="date" id="end-date" class="px-3 py-2 border border-gray-300 rounded-md">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Statusas</label>
+                                <select id="report-status" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <option value="">Visi statusai</option>
+                                    <option value="draft">Juodraščiai</option>
+                                    <option value="submitted">Pateikti</option>
+                                    <option value="director_approved">Patvirtinti</option>
+                                    <option value="ordered_from_supplier">Užsakyti tiekėjui</option>
+                                    <option value="delivered">Pristatyti</option>
+                                    <option value="completed">Užbaigti</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Skyrius</label>
+                                <select id="report-department" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                    <option value="">Visi skyriai</option>
+                                    <option value="Vadyba">Vadyba</option>
+                                    <option value="Techninė">Techninė</option>
+                                    <option value="Pirkimai">Pirkimai</option>
+                                    <option value="Finansai">Finansai</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 space-y-2">
+                            <button onclick="generateReport()" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+                                <i class="fas fa-search mr-2"></i>Generuoti ataskaitą
+                            </button>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="exportToPDF()" class="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700 text-sm">
+                                    <i class="fas fa-file-pdf mr-2"></i>Eksportuoti PDF
+                                </button>
+                                <button onclick="exportToExcel()" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 text-sm">
+                                    <i class="fas fa-file-excel mr-2"></i>Eksportuoti Excel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4">
+                        <h4 class="font-medium mb-4">Greitos ataskaitos</h4>
+                        <div class="space-y-2">
+                            <button onclick="quickReport('pending-approval')" class="w-full text-left bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 px-3 py-2 rounded text-sm">
+                                <i class="fas fa-clock mr-2 text-yellow-600"></i>Laukiantys patvirtinimo
+                            </button>
+                            <button onclick="quickReport('high-value')" class="w-full text-left bg-red-50 hover:bg-red-100 border border-red-200 px-3 py-2 rounded text-sm">
+                                <i class="fas fa-euro-sign mr-2 text-red-600"></i>Aukštos vertės užsakymai (>€1000)
+                            </button>
+                            <button onclick="quickReport('monthly-summary')" class="w-full text-left bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3 py-2 rounded text-sm">
+                                <i class="fas fa-calendar mr-2 text-blue-600"></i>Mėnesio suvestinė
+                            </button>
+                            <button onclick="quickReport('supplier-analysis')" class="w-full text-left bg-purple-50 hover:bg-purple-100 border border-purple-200 px-3 py-2 rounded text-sm">
+                                <i class="fas fa-truck mr-2 text-purple-600"></i>Tiekėjų analizė
+                            </button>
+                            <button onclick="quickReport('department-spending')" class="w-full text-left bg-green-50 hover:bg-green-100 border border-green-200 px-3 py-2 rounded text-sm">
+                                <i class="fas fa-building mr-2 text-green-600"></i>Skyrių išlaidos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Report Display Area -->
+                <div id="report-display-area">
+                    ${generateDefaultReportSummary()}
+                </div>
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+        
+        // Add event listener for period selection
+        document.getElementById('report-period').addEventListener('change', function() {
+            const customDates = document.getElementById('custom-dates');
+            if (this.value === 'custom') {
+                customDates.classList.remove('hidden');
+            } else {
+                customDates.classList.add('hidden');
+            }
+        });
+    }
+
+    // Generate default report summary
+    function generateDefaultReportSummary() {
+        const totalOrders = orders.length;
+        const totalValue = orders.reduce((sum, o) => sum + (o.totals?.total_amount || 0), 0);
+        const avgOrderValue = totalOrders > 0 ? totalValue / totalOrders : 0;
+        
+        // Status distribution
+        const statusStats = {};
+        Object.keys(ORDER_STATUSES).forEach(status => {
+            statusStats[status] = orders.filter(o => o.status === status).length;
+        });
+
+        // Monthly trend (last 6 months)
+        const monthlyData = {};
+        const now = new Date();
+        for (let i = 5; i >= 0; i--) {
+            const month = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const monthKey = month.toLocaleDateString('lt-LT', { year: 'numeric', month: 'long' });
+            const monthOrders = orders.filter(o => {
+                const orderDate = new Date(o.created_at);
+                return orderDate.getFullYear() === month.getFullYear() && 
+                       orderDate.getMonth() === month.getMonth();
+            });
+            monthlyData[monthKey] = {
+                count: monthOrders.length,
+                value: monthOrders.reduce((sum, o) => sum + (o.totals?.total_amount || 0), 0)
+            };
+        }
+
+        return `
+            <div class="border-t pt-6">
+                <h4 class="text-lg font-medium mb-4">Bendros statistikos</h4>
+                
+                <!-- Key Metrics -->
+                <div class="grid md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-blue-600">${totalOrders}</div>
+                        <div class="text-sm text-blue-600">Iš viso užsakymų</div>
+                    </div>
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-green-600">€${totalValue.toFixed(0)}</div>
+                        <div class="text-sm text-green-600">Bendra vertė</div>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-purple-600">€${avgOrderValue.toFixed(0)}</div>
+                        <div class="text-sm text-purple-600">Vidutinė užsakymo vertė</div>
+                    </div>
+                    <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
+                        <div class="text-2xl font-bold text-orange-600">${suppliers.length}</div>
+                        <div class="text-sm text-orange-600">Aktyvūs tiekėjai</div>
+                    </div>
+                </div>
+                
+                <!-- Status Distribution -->
+                <div class="grid md:grid-cols-2 gap-6 mb-6">
+                    <div class="border rounded-lg p-4">
+                        <h5 class="font-medium mb-3">Užsakymų statusų pasiskirstymas</h5>
+                        <div class="space-y-2">
+                            ${Object.entries(statusStats).map(([status, count]) => `
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm">${ORDER_STATUSES[status]?.name || status}</span>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-16 bg-gray-200 rounded-full h-2">
+                                            <div class="bg-blue-600 h-2 rounded-full" style="width: ${totalOrders > 0 ? (count / totalOrders) * 100 : 0}%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium w-8">${count}</span>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4">
+                        <h5 class="font-medium mb-3">6 mėnesių tendencija</h5>
+                        <div class="space-y-2">
+                            ${Object.entries(monthlyData).map(([month, data]) => `
+                                <div class="flex justify-between items-center text-sm">
+                                    <span>${month}</span>
+                                    <div class="text-right">
+                                        <div class="font-medium">${data.count} užs.</div>
+                                        <div class="text-xs text-gray-500">€${data.value.toFixed(0)}</div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center text-sm text-gray-500 mt-6">
+                    Pasirinkite ataskaitos parametrus aukščiau ir spustelėkite "Generuoti ataskaitą" detalesniam peržiūrėjimui
+                </div>
+            </div>
+        `;
+    }
+
+    // Essential interaction functions for the enterprise system
+    
+    // Order Status Management
+    function changeOrderStatus(orderId, newStatus) {
+        const order = orders.find(o => o.id === orderId);
+        if (!order) {
+            alert('Užsakymas nerastas!');
+            return;
+        }
+
+        const oldStatus = order.status;
+        let confirmMessage = '';
+        
+        switch (newStatus) {
+            case 'submitted':
+                confirmMessage = 'Ar tikrai norite pateikti užsakymą tvirtinti?';
+                break;
+            case 'director_approved':
+                confirmMessage = `Ar tikrai norite patvirtinti užsakymą "${order.title}"?`;
+                break;
+            case 'rejected':
+                const reason = prompt('Įveskite atmetimo priežastį:');
+                if (!reason) return;
+                order.rejection_reason = reason;
+                confirmMessage = `Ar tikrai norite atmesti užsakymą su priežastimi: "${reason}"?`;
+                break;
+            case 'returned':
+                const note = prompt('Įveskite pastabą grąžinimui:');
+                if (!note) return;
+                order.return_note = note;
+                confirmMessage = `Ar tikrai norite grąžinti užsakymą su pastaba: "${note}"?`;
+                break;
+            default:
+                confirmMessage = `Ar tikrai norite pakeisti užsakymo statusą į "${ORDER_STATUSES[newStatus]?.name || newStatus}"?`;
+        }
+
+        if (confirm(confirmMessage)) {
+            order.status = newStatus;
+            order.updated_at = new Date().toISOString();
+            
+            // Log audit event
+            logAuditEvent('status_change', 'order', orderId, { 
+                old_status: oldStatus, 
+                new_status: newStatus,
+                rejection_reason: order.rejection_reason,
+                return_note: order.return_note
+            });
+            
+            // Add automatic comment
+            addSystemComment(orderId, `Statusas pakeistas iš "${ORDER_STATUSES[oldStatus]?.name || oldStatus}" į "${ORDER_STATUSES[newStatus]?.name || newStatus}"`);
+            
+            // Save changes
+            localStorage.setItem('procurement_orders', JSON.stringify(orders));
+            
+            alert(`Užsakymo statusas pakeistas į "${ORDER_STATUSES[newStatus]?.name || newStatus}"!`);
+            updateDashboardStats();
+            
+            // Refresh current view
+            if (typeof showOrders === 'function') showOrders();
+            if (typeof showDirectorDashboard === 'function' && document.getElementById('content-area').innerHTML.includes('Direktoriaus valdymo skydas')) {
+                showDirectorDashboard();
+            }
+        }
+    }
+
+    // Quick approval functions for director dashboard
+    function quickApproveOrder(orderId) {
+        changeOrderStatus(orderId, 'director_approved');
+    }
+
+    function quickRejectOrder(orderId) {
+        changeOrderStatus(orderId, 'rejected');
+    }
+
+    // View Order Details
+    function viewOrder(orderId) {
+        const order = orders.find(o => o.id === orderId);
+        if (!order) {
+            alert('Užsakymas nerastas!');
+            return;
+        }
+
+        const user = users.find(u => u.id === order.user_id);
+        const orderComments = comments.filter(c => c.order_id === orderId);
+        const orderAttachments = attachments.filter(a => a.order_id === orderId);
+
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h3 class="text-xl font-semibold">${order.title}</h3>
+                        <p class="text-gray-600">${order.order_number}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="px-3 py-1 rounded-full text-sm font-medium bg-${ORDER_STATUSES[order.status]?.color || 'gray'}-100 text-${ORDER_STATUSES[order.status]?.color || 'gray'}-800">
+                            ${ORDER_STATUSES[order.status]?.name || order.status}
+                        </span>
+                        <button onclick="showOrders()" class="bg-gray-600 text-white px-3 py-2 rounded-md hover:bg-gray-700">
+                            <i class="fas fa-arrow-left mr-2"></i>Grįžti
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Order Information -->
+                    <div class="md:col-span-2 space-y-6">
+                        <div class="border rounded-lg p-4">
+                            <h4 class="font-medium mb-3">Užsakymo informacija</h4>
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div><strong>Sukūrė:</strong> ${user ? user.name : 'Nežinomas'}</div>
+                                <div><strong>Skyrius:</strong> ${order.department}</div>
+                                <div><strong>Prioritetas:</strong> ${order.priority === 'high' ? 'Aukštas' : order.priority === 'medium' ? 'Vidutinis' : 'Žemas'}</div>
+                                <div><strong>Sukurta:</strong> ${new Date(order.created_at).toLocaleDateString('lt-LT')}</div>
+                                <div><strong>Atnaujinta:</strong> ${new Date(order.updated_at).toLocaleDateString('lt-LT')}</div>
+                                ${order.expected_delivery ? `<div><strong>Tikėtinas pristatymas:</strong> ${new Date(order.expected_delivery).toLocaleDateString('lt-LT')}</div>` : ''}
+                            </div>
+                            ${order.description ? `
+                                <div class="mt-3">
+                                    <strong>Aprašymas:</strong>
+                                    <p class="text-gray-700 mt-1">${order.description}</p>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- Order Items -->
+                        <div class="border rounded-lg p-4">
+                            <h4 class="font-medium mb-3">Užsakymo prekės</h4>
+                            <div class="overflow-x-auto">
+                                <table class="w-full border-collapse">
+                                    <thead>
+                                        <tr class="bg-gray-50">
+                                            <th class="text-left p-2 border">SKU</th>
+                                            <th class="text-left p-2 border">Prekė</th>
+                                            <th class="text-right p-2 border">Kiek.</th>
+                                            <th class="text-right p-2 border">Kaina</th>
+                                            <th class="text-right p-2 border">Nuol.</th>
+                                            <th class="text-right p-2 border">Suma</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${order.items ? order.items.map(item => {
+                                            const supplier = suppliers.find(s => s.id === item.supplier_id);
+                                            return `
+                                                <tr>
+                                                    <td class="p-2 border font-mono text-xs">${item.sku || '-'}</td>
+                                                    <td class="p-2 border">
+                                                        <div class="font-medium">${item.product_name}</div>
+                                                        ${supplier ? `<div class="text-xs text-gray-500">Tiekėjas: ${supplier.name}</div>` : ''}
+                                                    </td>
+                                                    <td class="p-2 border text-right">${item.quantity}</td>
+                                                    <td class="p-2 border text-right">€${item.unit_price.toFixed(2)}</td>
+                                                    <td class="p-2 border text-right">${item.discount ? (item.discount * 100).toFixed(0) + '%' : '-'}</td>
+                                                    <td class="p-2 border text-right font-medium">€${item.total_amount.toFixed(2)}</td>
+                                                </tr>
+                                            `;
+                                        }).join('') : '<tr><td colspan="6" class="p-4 text-center text-gray-500">Nėra prekių</td></tr>'}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="bg-gray-50 font-medium">
+                                            <td colspan="4" class="p-2 border">Suma be PVM:</td>
+                                            <td class="p-2 border text-right">€${order.totals ? order.totals.net_amount.toFixed(2) : '0.00'}</td>
+                                        </tr>
+                                        <tr class="bg-gray-50">
+                                            <td colspan="4" class="p-2 border">PVM:</td>
+                                            <td class="p-2 border text-right">€${order.totals ? order.totals.vat_amount.toFixed(2) : '0.00'}</td>
+                                        </tr>
+                                        <tr class="bg-gray-100 font-bold">
+                                            <td colspan="4" class="p-2 border">Bendra suma:</td>
+                                            <td class="p-2 border text-right text-lg">€${order.totals ? order.totals.total_amount.toFixed(2) : '0.00'}</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Actions & Comments Sidebar -->
+                    <div class="space-y-6">
+                        <!-- Actions -->
+                        <div class="border rounded-lg p-4">
+                            <h4 class="font-medium mb-3">Veiksmai</h4>
+                            <div class="space-y-2">
+                                ${getStatusChangeButtons(order)}
+                                ${hasPermission('add_comments') ? `
+                                    <button onclick="showAddCommentModal(${orderId})" class="w-full bg-purple-600 text-white py-2 px-3 rounded text-sm hover:bg-purple-700">
+                                        <i class="fas fa-comment-plus mr-2"></i>Pridėti komentarą
+                                    </button>
+                                ` : ''}
+                                ${(hasPermission('update') || (hasPermission('update_own') && order.user_id === currentUser.id)) && ['draft', 'returned'].includes(order.status) ? `
+                                    <button onclick="editOrder(${orderId})" class="w-full bg-yellow-600 text-white py-2 px-3 rounded text-sm hover:bg-yellow-700">
+                                        <i class="fas fa-edit mr-2"></i>Redaguoti užsakymą
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <!-- Comments -->
+                        <div class="border rounded-lg p-4">
+                            <h4 class="font-medium mb-3">Komentarai (${orderComments.length})</h4>
+                            <div class="space-y-3 max-h-64 overflow-y-auto">
+                                ${orderComments.length === 0 ? 
+                                    '<p class="text-gray-500 text-sm text-center py-4">Komentarų nėra</p>' :
+                                    orderComments
+                                        .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                                        .map(comment => `
+                                            <div class="bg-gray-50 rounded p-3 text-sm">
+                                                <div class="flex justify-between items-start mb-1">
+                                                    <span class="font-medium text-xs text-blue-600">${comment.user_name}</span>
+                                                    <span class="text-xs text-gray-500">${new Date(comment.created_at).toLocaleDateString('lt-LT')}</span>
+                                                </div>
+                                                <p class="text-gray-700">${comment.comment}</p>
+                                                ${comment.type && comment.type !== 'general' ? `
+                                                    <span class="inline-block mt-1 px-2 py-1 bg-${comment.type === 'urgent' ? 'red' : 'blue'}-100 text-${comment.type === 'urgent' ? 'red' : 'blue'}-700 text-xs rounded">
+                                                        ${comment.type === 'urgent' ? 'Skubus' : comment.type}
+                                                    </span>
+                                                ` : ''}
+                                            </div>
+                                        `).join('')
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    // Add system comment
+    function addSystemComment(orderId, commentText) {
+        const comment = {
+            id: Date.now(),
+            order_id: orderId,
+            user_id: currentUser.id,
+            user_name: 'Sistema',
+            comment: commentText,
+            type: 'system',
+            created_at: new Date().toISOString()
+        };
+        
+        comments.push(comment);
+        localStorage.setItem('procurement_comments', JSON.stringify(comments));
+    }
+
+    // Order filtering functions
+    function filterOrders(status) {
+        // This would be implemented to filter the orders view
+        // For now, just show all orders filtered by status
+        showOrders();
+        // Additional filtering logic would go here
+    }
+
+    function filterDirectorOrders(filter) {
+        // This would filter the director dashboard orders
+        showDirectorDashboard();
+        // Additional filtering logic would go here
+    }
+
+    // PDF Export functionality (using jsPDF)
+    function exportToPDF() {
+        // Note: In a real implementation, you would include jsPDF library
+        // This is a placeholder that demonstrates the concept
+        
+        if (typeof jsPDF === 'undefined') {
+            // Fallback: create a simple HTML report for download
+            const reportData = getReportData();
+            const htmlContent = generateHTMLReport(reportData);
+            
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Ataskaita_${new Date().toISOString().split('T')[0]}.html`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert('PDF biblioteka nėra prijungta. Ataskaita išsaugota HTML formatu.');
+        } else {
+            // Real PDF generation would go here
+            alert('PDF generavimas bus implementuotas su jsPDF biblioteka.');
+        }
+    }
+
+    // Excel Export functionality  
+    function exportToExcel() {
+        const reportData = getReportData();
+        const csvContent = generateCSV(reportData);
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Ataskaita_${new Date().toISOString().split('T')[0]}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        
+        alert('Ataskaita išsaugota CSV formatu (atveriama Excel programoje).');
+    }
+
+    // Generate report data based on current filters
+    function getReportData() {
+        const period = document.getElementById('report-period')?.value || 'all';
+        const status = document.getElementById('report-status')?.value || '';
+        const department = document.getElementById('report-department')?.value || '';
+        
+        let filteredOrders = [...orders];
+        
+        // Apply filters
+        if (status) {
+            filteredOrders = filteredOrders.filter(o => o.status === status);
+        }
+        if (department) {
+            filteredOrders = filteredOrders.filter(o => o.department === department);
+        }
+        
+        // Apply date filter
+        if (period !== 'all') {
+            const now = new Date();
+            let startDate;
+            
+            switch (period) {
+                case 'today':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    break;
+                case 'week':
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'month':
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    break;
+                case 'quarter':
+                    startDate = new Date(now.getFullYear(), Math.floor(now.getMonth() / 3) * 3, 1);
+                    break;
+                case 'year':
+                    startDate = new Date(now.getFullYear(), 0, 1);
+                    break;
+            }
+            
+            if (startDate) {
+                filteredOrders = filteredOrders.filter(o => new Date(o.created_at) >= startDate);
+            }
+        }
+        
+        return filteredOrders;
+    }
+
+    // Generate CSV content
+    function generateCSV(ordersData) {
+        const headers = ['Užsakymo numeris', 'Pavadinimas', 'Statusas', 'Skyrius', 'Sukūrė', 'Data', 'Suma be PVM', 'PVM', 'Bendra suma'];
+        const csvRows = [headers.join(',')];
+        
+        ordersData.forEach(order => {
+            const user = users.find(u => u.id === order.user_id);
+            const row = [
+                `"${order.order_number}"`,
+                `"${order.title}"`,
+                `"${ORDER_STATUSES[order.status]?.name || order.status}"`,
+                `"${order.department}"`,
+                `"${user ? user.name : 'Nežinomas'}"`,
+                `"${new Date(order.created_at).toLocaleDateString('lt-LT')}"`,
+                `"${order.totals ? order.totals.net_amount.toFixed(2) : '0.00'}"`,
+                `"${order.totals ? order.totals.vat_amount.toFixed(2) : '0.00'}"`,
+                `"${order.totals ? order.totals.total_amount.toFixed(2) : '0.00'}"`
+            ];
+            csvRows.push(row.join(','));
+        });
+        
+        return csvRows.join('\n');
+    }
+
+    // Generate HTML report
+    function generateHTMLReport(ordersData) {
+        const totalValue = ordersData.reduce((sum, o) => sum + (o.totals?.total_amount || 0), 0);
+        const totalNet = ordersData.reduce((sum, o) => sum + (o.totals?.net_amount || 0), 0);
+        const totalVat = ordersData.reduce((sum, o) => sum + (o.totals?.vat_amount || 0), 0);
+        
+        return `
+            <!DOCTYPE html>
+            <html lang="lt">
+            <head>
+                <meta charset="UTF-8">
+                <title>Įmonės pirkimų ataskaita</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    h1 { color: #333; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+                    table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background-color: #f8f9fa; }
+                    .summary { background-color: #e9ecef; padding: 15px; margin: 20px 0; border-radius: 5px; }
+                </style>
+            </head>
+            <body>
+                <h1>Įmonės pirkimų valdymo sistemos ataskaita</h1>
+                <p>Sugeneravo: ${currentUser.name} | Data: ${new Date().toLocaleString('lt-LT')}</p>
+                
+                <div class="summary">
+                    <h3>Suvestinė</h3>
+                    <p><strong>Užsakymų skaičius:</strong> ${ordersData.length}</p>
+                    <p><strong>Bendra suma be PVM:</strong> €${totalNet.toFixed(2)}</p>
+                    <p><strong>PVM suma:</strong> €${totalVat.toFixed(2)}</p>
+                    <p><strong>Bendra suma su PVM:</strong> €${totalValue.toFixed(2)}</p>
+                </div>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Užsakymo numeris</th>
+                            <th>Pavadinimas</th>
+                            <th>Statusas</th>
+                            <th>Skyrius</th>
+                            <th>Sukūrė</th>
+                            <th>Data</th>
+                            <th>Bendra suma</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${ordersData.map(order => {
+                            const user = users.find(u => u.id === order.user_id);
+                            return `
+                                <tr>
+                                    <td>${order.order_number}</td>
+                                    <td>${order.title}</td>
+                                    <td>${ORDER_STATUSES[order.status]?.name || order.status}</td>
+                                    <td>${order.department}</td>
+                                    <td>${user ? user.name : 'Nežinomas'}</td>
+                                    <td>${new Date(order.created_at).toLocaleDateString('lt-LT')}</td>
+                                    <td>€${order.totals ? order.totals.total_amount.toFixed(2) : '0.00'}</td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            </body>
+            </html>
+        `;
+    }
+
+    // Quick reports
+    function quickReport(reportType) {
+        let filteredData;
+        let title;
+        
+        switch (reportType) {
+            case 'pending-approval':
+                filteredData = orders.filter(o => o.status === 'submitted');
+                title = 'Laukiantys patvirtinimo užsakymai';
+                break;
+            case 'high-value':
+                filteredData = orders.filter(o => o.totals && o.totals.total_amount > 1000);
+                title = 'Aukštos vertės užsakymai (>€1000)';
+                break;
+            case 'monthly-summary':
+                const thisMonth = new Date();
+                thisMonth.setDate(1);
+                filteredData = orders.filter(o => new Date(o.created_at) >= thisMonth);
+                title = 'Šio mėnesio užsakymai';
+                break;
+            case 'supplier-analysis':
+                // This would show supplier-based analysis
+                alert('Tiekėjų analizės ataskaita bus implementuota ateityje.');
+                return;
+            case 'department-spending':
+                // This would show department-based spending
+                alert('Skyrių išlaidų ataskaita bus implementuota ateityje.');
+                return;
+        }
+        
+        displayQuickReport(filteredData, title);
+    }
+
+    // Display quick report
+    function displayQuickReport(data, title) {
+        const totalValue = data.reduce((sum, o) => sum + (o.totals?.total_amount || 0), 0);
+        
+        const html = `
+            <div class="border-t pt-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h4 class="text-lg font-medium">${title}</h4>
+                    <div class="flex space-x-2">
+                        <button onclick="exportToPDF()" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                            <i class="fas fa-file-pdf mr-1"></i>PDF
+                        </button>
+                        <button onclick="exportToExcel()" class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700">
+                            <i class="fas fa-file-excel mr-1"></i>Excel
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <div class="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                            <div class="text-2xl font-bold text-blue-600">${data.length}</div>
+                            <div class="text-sm text-blue-600">Užsakymų</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-green-600">€${totalValue.toFixed(0)}</div>
+                            <div class="text-sm text-green-600">Bendra suma</div>
+                        </div>
+                        <div>
+                            <div class="text-2xl font-bold text-purple-600">€${data.length > 0 ? (totalValue / data.length).toFixed(0) : 0}</div>
+                            <div class="text-sm text-purple-600">Vidutinė vertė</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="text-left p-2 border">Numeris</th>
+                                <th class="text-left p-2 border">Pavadinimas</th>
+                                <th class="text-left p-2 border">Statusas</th>
+                                <th class="text-left p-2 border">Skyrius</th>
+                                <th class="text-right p-2 border">Suma</th>
+                                <th class="text-center p-2 border">Data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${data.map(order => {
+                                const statusColors = {
+                                    draft: 'bg-gray-100 text-gray-800',
+                                    submitted: 'bg-blue-100 text-blue-800',
+                                    director_approved: 'bg-green-100 text-green-800',
+                                    ordered_from_supplier: 'bg-purple-100 text-purple-800',
+                                    delivered: 'bg-indigo-100 text-indigo-800',
+                                    completed: 'bg-emerald-100 text-emerald-800',
+                                    rejected: 'bg-red-100 text-red-800'
+                                };
+                                
+                                return `
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="p-2 border font-mono text-sm">${order.order_number}</td>
+                                        <td class="p-2 border">${order.title}</td>
+                                        <td class="p-2 border">
+                                            <span class="px-2 py-1 rounded text-xs ${statusColors[order.status] || 'bg-gray-100 text-gray-800'}">
+                                                ${ORDER_STATUSES[order.status]?.name || order.status}
+                                            </span>
+                                        </td>
+                                        <td class="p-2 border">${order.department}</td>
+                                        <td class="p-2 border text-right font-medium">€${order.totals ? order.totals.total_amount.toFixed(2) : '0.00'}</td>
+                                        <td class="p-2 border text-center text-sm">${new Date(order.created_at).toLocaleDateString('lt-LT')}</td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+        
+        document.getElementById('report-display-area').innerHTML = html;
+    }
+
+    // Generate custom report
+    function generateReport() {
+        const reportData = getReportData();
+        displayQuickReport(reportData, 'Pasirinktinė ataskaita');
+    }
+
+    // Search functions
+    function searchProducts(query) {
+        const rows = document.querySelectorAll('#products-table-body tr');
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            if (text.includes(query.toLowerCase()) || query === '') {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function searchSuppliers(query) {
+        const cards = document.querySelectorAll('#suppliers-grid > div');
+        cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            if (text.includes(query.toLowerCase()) || query === '') {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function showCreateOrderForm() {
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-6">Naujas prekių užsakymas</h3>
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Pavadinimas *</label>
+                        <input id="req-title" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                               placeholder="Užklausos pavadinimas">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Aprašymas</label>
+                        <textarea id="req-desc" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                                  placeholder="Detalus aprašymas"></textarea>
+                    </div>
+                    
+                    <div class="border-t pt-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-medium">Prekės</h4>
+                            <button type="button" onclick="addProductLine()" class="bg-blue-600 text-white px-3 py-2 rounded-md text-sm hover:bg-blue-700">
+                                <i class="fas fa-plus mr-1"></i>Pridėti prekę
+                            </button>
+                        </div>
+                        
+                        <div id="products-container">
+                            <div class="product-line grid grid-cols-12 gap-2 mb-3 items-end">
+                                <div class="col-span-4">
+                                    <label class="block text-xs font-medium text-gray-700">Prekė</label>
+                                    <input type="text" class="product-name w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="Prekės pavadinimas">
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-xs font-medium text-gray-700">Kiekis</label>
+                                    <input type="number" class="product-qty w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="1" value="1" onchange="calculateTotal(this)">
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-xs font-medium text-gray-700">Kaina €</label>
+                                    <input type="number" step="0.01" class="product-price w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="0.00" onchange="calculateTotal(this)">
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-xs font-medium text-gray-700">Viso €</label>
+                                    <input type="text" class="product-total w-full px-2 py-1 border border-gray-300 rounded text-sm bg-gray-100" readonly>
+                                </div>
+                                <div class="col-span-2">
+                                    <button type="button" onclick="removeProductLine(this)" class="w-full bg-red-600 text-white px-2 py-1 rounded text-sm hover:bg-red-700" disabled>
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mt-4 p-3 bg-gray-50 rounded">
+                            <span class="font-medium">Bendra suma:</span>
+                            <span id="grand-total" class="font-bold text-lg">€0.00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3 pt-4">
+                        <button type="button" onclick="createRequest('draft')" class="flex-1 bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700">
+                            <i class="fas fa-save mr-2"></i>Išsaugoti kaip juodraštį
+                        </button>
+                        <button type="button" onclick="createRequest('pending')" class="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                            <i class="fas fa-paper-plane mr-2"></i>Pateikti tvirtinimui
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    function addProductLine() {
+        const container = document.getElementById('products-container');
+        
+        const newLine = document.createElement('div');
+        newLine.className = 'product-line grid grid-cols-12 gap-2 mb-3 items-end';
+        newLine.innerHTML = `
+            <div class="col-span-4">
+                <input type="text" class="product-name w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="Prekės pavadinimas">
+            </div>
+            <div class="col-span-2">
+                <input type="number" class="product-qty w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="1" value="1" onchange="calculateTotal(this)">
+            </div>
+            <div class="col-span-2">
+                <input type="number" step="0.01" class="product-price w-full px-2 py-1 border border-gray-300 rounded text-sm" placeholder="0.00" onchange="calculateTotal(this)">
+            </div>
+            <div class="col-span-2">
+                <input type="text" class="product-total w-full px-2 py-1 border border-gray-300 rounded text-sm bg-gray-100" readonly>
+            </div>
+            <div class="col-span-2">
+                <button type="button" onclick="removeProductLine(this)" class="w-full bg-red-600 text-white px-2 py-1 rounded text-sm hover:bg-red-700">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        
+        container.appendChild(newLine);
+        updateRemoveButtons();
+    }
+
+    function removeProductLine(button) {
+        const line = button.closest('.product-line');
+        line.remove();
+        updateRemoveButtons();
+        calculateGrandTotal();
+    }
+
+    function updateRemoveButtons() {
+        const lines = document.querySelectorAll('.product-line');
+        lines.forEach((line, index) => {
+            const button = line.querySelector('button');
+            button.disabled = lines.length === 1;
+        });
+    }
+
+    function calculateTotal(input) {
+        const line = input.closest('.product-line');
+        const qty = parseFloat(line.querySelector('.product-qty').value) || 0;
+        const price = parseFloat(line.querySelector('.product-price').value) || 0;
+        const total = qty * price;
+        
+        line.querySelector('.product-total').value = '€' + total.toFixed(2);
+        calculateGrandTotal();
+    }
+
+    function calculateGrandTotal() {
+        const lines = document.querySelectorAll('.product-line');
+        let grandTotal = 0;
+        
+        lines.forEach(line => {
+            const qty = parseFloat(line.querySelector('.product-qty').value) || 0;
+            const price = parseFloat(line.querySelector('.product-price').value) || 0;
+            grandTotal += qty * price;
+        });
+        
+        const grandTotalElement = document.getElementById('grand-total');
+        if (grandTotalElement) {
+            grandTotalElement.textContent = '€' + grandTotal.toFixed(2);
+        }
+    }
+
+    function createRequest(status) {
+        const title = document.getElementById('req-title').value;
+        const description = document.getElementById('req-desc').value;
+        
+        if (!title.trim()) {
+            alert('Prašome įvesti užklausos pavadinimą');
+            return;
+        }
+        
+        // Collect products
+        const lines = document.querySelectorAll('.product-line');
+        const items = [];
+        
+        lines.forEach(line => {
+            const name = line.querySelector('.product-name').value.trim();
+            const qty = parseFloat(line.querySelector('.product-qty').value) || 0;
+            const price = parseFloat(line.querySelector('.product-price').value) || 0;
+            
+            if (name && qty > 0) {
+                items.push({
+                    product: name,
+                    quantity: qty,
+                    unit_price: price,
+                    total_price: qty * price
+                });
+            }
+        });
+        
+        if (items.length === 0) {
+            alert('Prašome pridėti bent vieną prekę');
+            return;
+        }
+        
+        // Create new request
+        const newRequest = {
+            id: Math.max(...requests.map(r => r.id), 0) + 1,
+            title: title,
+            description: description,
+            status: status,
+            user_id: currentUser.id,
+            created_at: new Date().toISOString(),
+            items: items
+        };
+        
+        requests.push(newRequest);
+        localStorage.setItem('demo_requests', JSON.stringify(requests));
+        
+        alert(status === 'draft' ? 'Užklausa išsaugota kaip juodraštis!' : 'Užklausa pateikta tvirtinimui!');
+        showRequests();
+        updateDashboardStats();
+    }
+
+    function updateRequestStatus(requestId, newStatus) {
+        const request = requests.find(r => r.id === requestId);
+        if (request) {
+            request.status = newStatus;
+            localStorage.setItem('demo_requests', JSON.stringify(requests));
+            
+            alert(`Užklausa "${request.title}" ${newStatus === 'approved' ? 'patvirtinta' : 'atmesta'}!`);
+            showRequests();
+            updateDashboardStats();
+        }
+    }
+
+    function requestClarification(requestId) {
+        const note = prompt('Įveskite patikslinimo pastabą:');
+        if (note && note.trim()) {
+            const request = requests.find(r => r.id === requestId);
+            if (request) {
+                request.status = 'clarification_needed';
+                request.clarification_note = note.trim();
+                localStorage.setItem('demo_requests', JSON.stringify(requests));
+                
+                alert(`Užklausa "${request.title}" grąžinta tikslinti!`);
+                showRequests();
+                updateDashboardStats();
+            }
+        }
+    }
+
+    function rejectRequest(requestId) {
+        const reason = prompt('Įveskite atmetimo priežastį:');
+        if (reason && reason.trim()) {
+            const request = requests.find(r => r.id === requestId);
+            if (request) {
+                request.status = 'rejected';
+                request.rejected_reason = reason.trim();
+                localStorage.setItem('demo_requests', JSON.stringify(requests));
+                
+                alert(`Užklausa "${request.title}" atmesta!`);
+                showRequests();
+                updateDashboardStats();
+            }
+        }
+    }
+
+    function deleteRequest(requestId) {
+        if (confirm('Ar tikrai norite ištrinti šią užklausą?')) {
+            const requestIndex = requests.findIndex(r => r.id === requestId);
+            if (requestIndex > -1) {
+                const request = requests[requestIndex];
+                requests.splice(requestIndex, 1);
+                localStorage.setItem('demo_requests', JSON.stringify(requests));
+                
+                alert(`Užklausa "${request.title}" ištrinta!`);
+                showRequests();
+                updateDashboardStats();
+            }
+        }
+    }
+
+    function editRequest(requestId) {
+        alert('Redagavimo funkcija bus pridėta ateityje');
+    }
+
+    function showUserManagement() {
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold">Vartotojų valdymas</h3>
+                    <button type="button" onclick="showAddUserForm()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                        <i class="fas fa-plus mr-2"></i>Pridėti vartotoją
+                    </button>
+                </div>
+                
+                <div class="space-y-4">
+                    ${users.map(user => `
+                        <div class="border rounded-lg p-4 flex justify-between items-center">
+                            <div>
+                                <div class="font-medium">${user.name}</div>
+                                <div class="text-sm text-gray-600">${user.email} | ${user.role} | ${user.department}</div>
+                                <div class="text-xs text-gray-500">Teisės: ${user.permissions.join(', ')}</div>
+                            </div>
+                            <div class="space-x-2">
+                                <button type="button" onclick="openEditUserModal(${user.id})" class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                                    <i class="fas fa-edit mr-1"></i>Redaguoti
+                                </button>
+                                ${user.id !== 1 ? `
+                                    <button type="button" onclick="deleteUser(${user.id})" class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700">
+                                        <i class="fas fa-trash mr-1"></i>Ištrinti
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    function showAddUserForm() {
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-6">Pridėti naują vartotoją</h3>
+                
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Vardas</label>
+                            <input id="new-user-name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Vardas Pavardė">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">El. paštas</label>
+                            <input id="new-user-email" type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="vardas@company.com">
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Slaptažodis</label>
+                            <input id="new-user-password" type="password" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="slaptažodis">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Rolė</label>
+                            <select id="new-user-role" class="w-full px-3 py-2 border border-gray-300 rounded-md">
+                                <option value="employee">Darbuotojas</option>
+                                <option value="tech_director">Techninis direktorius</option>
+                                <option value="director">Direktorius</option>
+                                <option value="admin">Administratorius</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Skyrius</label>
+                            <input id="new-user-department" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Pirkimai">
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3 pt-4">
+                        <button type="button" onclick="addUser()" class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                            <i class="fas fa-save mr-2"></i>Išsaugoti vartotoją
+                        </button>
+                        <button type="button" onclick="showUserManagement()" class="bg-gray-600 text-white py-2 px-4 rounded-md hover:bg-gray-700">
+                            Atšaukti
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    function addUser() {
+        const name = document.getElementById('new-user-name').value.trim();
+        const email = document.getElementById('new-user-email').value.trim();
+        const password = document.getElementById('new-user-password').value.trim();
+        const role = document.getElementById('new-user-role').value;
+        const department = document.getElementById('new-user-department').value.trim();
+        
+        if (!name || !email || !password || !department) {
+            alert('Prašome užpildyti visus laukus');
+            return;
+        }
+        
+        // Check if email already exists
+        if (users.find(u => u.email === email)) {
+            alert('Vartotojas su tokiu el. paštu jau egzistuoja');
+            return;
+        }
+        
+        // Set permissions based on role
+        let permissions = [];
+        switch (role) {
+            case 'admin':
+                permissions = ['create', 'read', 'update', 'delete', 'approve', 'reject', 'manage_users', 'reports'];
+                break;
+            case 'tech_director':
+                permissions = ['create', 'read', 'update', 'manage_requests'];
+                break;
+            case 'director':
+                permissions = ['read', 'approve', 'reject', 'return_for_clarification'];
+                break;
+            case 'employee':
+                permissions = ['create', 'read', 'update_own'];
+                break;
+        }
+        
+        const newUser = {
+            id: Math.max(...users.map(u => u.id), 0) + 1,
+            email: email,
+            password: password,
+            name: name,
+            role: role,
+            department: department,
+            permissions: permissions
+        };
+        
+        users.push(newUser);
+        localStorage.setItem('demo_users', JSON.stringify(users));
+        
+        alert(`Vartotojas "${name}" sėkmingai pridėtas!`);
+        showUserManagement();
+    }
+
+    function openEditUserModal(userId) {
+        const user = users.find(u => u.id === userId);
+        if (!user) {
+            alert('Vartotojas nerastas');
+            return;
+        }
+        
+        // Fill the modal form
+        document.getElementById('edit-user-id').value = user.id;
+        document.getElementById('edit-user-name').value = user.name;
+        document.getElementById('edit-user-email').value = user.email;
+        document.getElementById('edit-user-password').value = '';
+        document.getElementById('edit-user-role').value = user.role;
+        document.getElementById('edit-user-department').value = user.department;
+        
+        // Show modal
+        document.getElementById('edit-user-modal').classList.remove('hidden');
+    }
+
+    function closeEditUserModal() {
+        document.getElementById('edit-user-modal').classList.add('hidden');
+    }
+
+    function saveUserChanges() {
+        const userId = parseInt(document.getElementById('edit-user-id').value);
+        const name = document.getElementById('edit-user-name').value.trim();
+        const email = document.getElementById('edit-user-email').value.trim();
+        const password = document.getElementById('edit-user-password').value.trim();
+        const role = document.getElementById('edit-user-role').value;
+        const department = document.getElementById('edit-user-department').value.trim();
+        
+        if (!name || !email || !department) {
+            alert('Prašome užpildyti visus laukus');
+            return;
+        }
+        
+        // Find user to edit
+        const userIndex = users.findIndex(u => u.id === userId);
+        if (userIndex === -1) {
+            alert('Vartotojas nerastas');
+            return;
+        }
+        
+        // Check if email is unique (excluding current user)
+        if (users.find(u => u.email === email && u.id !== userId)) {
+            alert('Vartotojas su tokiu el. paštu jau egzistuoja');
+            return;
+        }
+        
+        // Set permissions based on role
+        let permissions = [];
+        switch (role) {
+            case 'admin':
+                permissions = ['create', 'read', 'update', 'delete', 'approve', 'reject', 'manage_users', 'reports'];
+                break;
+            case 'tech_director':
+                permissions = ['create', 'read', 'update', 'manage_requests'];
+                break;
+            case 'director':
+                permissions = ['read', 'approve', 'reject', 'return_for_clarification'];
+                break;
+            case 'employee':
+                permissions = ['create', 'read', 'update_own'];
+                break;
+        }
+        
+        // Update user
+        users[userIndex].name = name;
+        users[userIndex].email = email;
+        if (password) {
+            users[userIndex].password = password;
+        }
+        users[userIndex].role = role;
+        users[userIndex].department = department;
+        users[userIndex].permissions = permissions;
+        
+        // Save to localStorage
+        localStorage.setItem('demo_users', JSON.stringify(users));
+        
+        // Update current user if editing self
+        if (currentUser && currentUser.id === userId) {
+            currentUser = users[userIndex];
+        }
+        
+        alert(`Vartotojas "${name}" sėkmingai atnaujintas!`);
+        
+        // Close modal and refresh view
+        closeEditUserModal();
+        showUserManagement();
+    }
+
+    function deleteUser(userId) {
+        if (userId === 1) {
+            alert('Negalima ištrinti pagrindinio administratoriaus');
+            return;
+        }
+        
+        if (confirm('Ar tikrai norite ištrinti šį vartotoją?')) {
+            const userIndex = users.findIndex(u => u.id === userId);
+            if (userIndex > -1) {
+                const user = users[userIndex];
+                users.splice(userIndex, 1);
+                localStorage.setItem('demo_users', JSON.stringify(users));
+                
+                alert(`Vartotojas "${user.name}" ištrintas!`);
+                showUserManagement();
+            }
+        }
+    }
+
+    function showReports() {
+        const totalRequests = requests.length;
+        const approvedRequests = requests.filter(r => r.status === 'approved').length;
+        const pendingRequests = requests.filter(r => r.status === 'pending').length;
+        const rejectedRequests = requests.filter(r => r.status === 'rejected').length;
+        const totalValue = requests.reduce((sum, req) => {
+            const reqValue = req.items ? req.items.reduce((itemSum, item) => itemSum + (item.total_price || 0), 0) : 0;
+            return sum + reqValue;
+        }, 0);
+        
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <h3 class="text-lg font-semibold mb-6">Sistemos ataskaitos</h3>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-4 rounded-lg">
+                        <h4 class="font-medium text-blue-800 mb-3">Užklausų statistikos</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Iš viso užklausų:</span>
+                                <span class="font-medium">${totalRequests}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Patvirtinta:</span>
+                                <span class="font-medium text-green-600">${approvedRequests}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Laukia patvirtinimo:</span>
+                                <span class="font-medium text-yellow-600">${pendingRequests}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Atmesta:</span>
+                                <span class="font-medium text-red-600">${rejectedRequests}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-green-50 p-4 rounded-lg">
+                        <h4 class="font-medium text-green-800 mb-3">Finansinė ataskaita</h4>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Bendra vertė:</span>
+                                <span class="font-medium">€${totalValue.toFixed(2)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Patvirtintų vertė:</span>
+                                <span class="font-medium text-green-600">€${requests.filter(r => r.status === 'approved').reduce((sum, req) => sum + (req.items || []).reduce((itemSum, item) => itemSum + (item.total_price || 0), 0), 0).toFixed(2)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span>Vidutinė užklausos vertė:</span>
+                                <span class="font-medium">€${totalRequests > 0 ? (totalValue / totalRequests).toFixed(2) : '0.00'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <h4 class="font-medium mb-3">Vartotojų aktyvumas</h4>
+                    <div class="space-y-2">
+                        ${users.map(user => {
+                            const userRequestCount = requests.filter(r => r.user_id === user.id).length;
+                            return `
+                                <div class="flex justify-between items-center py-2 border-b">
+                                    <span>${user.name} (${user.role})</span>
+                                    <span class="text-sm text-gray-600">${userRequestCount} užklausų</span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    function clearAllData() {
+        if (confirm('DĖMESIO! Šis veiksmas ištrins visus duomenis (išskyrus vartotojus). Ar tikrai norite tęsti?')) {
+            if (confirm('Paskutinis patvirtinimas - visi užsakymų duomenys bus prarasti!')) {
+                orders = [];
+                products = [];
+                suppliers = [];
+                comments = [];
+                attachments = [];
+                auditLog = [];
+                
+                localStorage.setItem('procurement_orders', JSON.stringify(orders));
+                localStorage.setItem('procurement_products', JSON.stringify(products));
+                localStorage.setItem('procurement_suppliers', JSON.stringify(suppliers));
+                localStorage.setItem('procurement_comments', JSON.stringify(comments));
+                localStorage.setItem('procurement_attachments', JSON.stringify(attachments));
+                localStorage.setItem('procurement_audit_log', JSON.stringify(auditLog));
+                
+                alert('Visi duomenys išvalyti!');
+                updateDashboardStats();
+                showOrders();
+            }
+        }
+    }
+
+    function logout() {
+        currentUser = null;
+        document.getElementById('login-section').classList.remove('hidden');
+        document.getElementById('dashboard-section').classList.add('hidden');
+        document.getElementById('admin-panel').classList.add('hidden');
+        document.getElementById('content-area').innerHTML = '';
+        
+        // Reset form
+        document.getElementById('email').value = 'admin@company.com';
+        document.getElementById('password').value = 'admin123';
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Page loaded, initializing...'); // Debug
+        
+        // Initialize data
+        initializeData();
+        
+        // Add login button event listener
+        document.getElementById('login-btn').addEventListener('click', login);
+        
+        // Enter key support
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && !document.getElementById('login-section').classList.contains('hidden')) {
+                login();
+            }
+        });
+        
+        // Close modal when clicking outside
+        document.getElementById('edit-user-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditUserModal();
+            }
+        });
+        
+        console.log('Initialization complete'); // Debug
+    });
+    </script>
+</body>
+</html>

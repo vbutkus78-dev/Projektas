@@ -1,0 +1,28 @@
+NETLIFY DEPLOYMENT READY
+========================
+
+Date: Thu Sep 11 19:41:49 UTC 2025
+Files: 6 files ready
+Size: 160K
+
+Files included:
+total 164
+drwxr-xr-x  2 user user   4096 Sep 11 19:41 .
+drwxr-xr-x 11 user user   4096 Sep 11 19:41 ..
+-rw-r--r--  1 user user     18 Sep 11 19:41 _redirects
+-rw-r--r--  1 user user      0 Sep 11 19:41 deploy-info.txt
+-rw-r--r--  1 user user 155200 Sep 11 19:41 index.html
+
+Instructions:
+1. Download this folder or zip it
+2. Go to https://app.netlify.com
+3. Create new site or update existing
+4. Drag & drop this folder or upload zip
+
+Features fixed in this deployment:
+✅ New Order button works  
+✅ New Supplier button works
+✅ Product management actions work
+✅ Reports generation works
+✅ Filtering system works
+✅ VAT calculations work correctly

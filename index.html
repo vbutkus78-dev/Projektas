@@ -2890,6 +2890,345 @@
         
         console.log('Initialization complete'); // Debug
     });
+
+    // Missing critical UI functions - FIXED
+    function showCreateSupplierForm() {
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold">Naujas tiekėjas</h3>
+                    <button onclick="showSuppliers()" class="bg-gray-600 text-white px-3 py-2 rounded-md hover:bg-gray-700">
+                        <i class="fas fa-arrow-left mr-2"></i>Grįžti
+                    </button>
+                </div>
+                
+                <form onsubmit="saveSupplier(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Pavadinimas *</label>
+                        <input id="supplier-name" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                               placeholder="Tiekėjo pavadinimas">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">El. paštas</label>
+                            <input id="supplier-email" type="email" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="info@tiekrejas.lt">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Telefonas</label>
+                            <input id="supplier-phone" type="tel" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="+370 600 12345">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Adresas</label>
+                        <textarea id="supplier-address" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                                  placeholder="Pilnas adresas"></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">PVM kodas</label>
+                            <input id="supplier-vat" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="LT123456789">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kategorija</label>
+                            <select id="supplier-category" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                <option value="general">Bendras</option>
+                                <option value="office">Biuro reikmenys</option>
+                                <option value="tech">Technika</option>
+                                <option value="services">Paslaugos</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4 flex space-x-2">
+                        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                            <i class="fas fa-save mr-2"></i>Išsaugoti
+                        </button>
+                        <button type="button" onclick="showSuppliers()" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                            Atšaukti
+                        </button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    function showCreateProductForm() {
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold">Naujas produktas</h3>
+                    <button onclick="showProducts()" class="bg-gray-600 text-white px-3 py-2 rounded-md hover:bg-gray-700">
+                        <i class="fas fa-arrow-left mr-2"></i>Grįžti
+                    </button>
+                </div>
+                
+                <form onsubmit="saveProduct(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Pavadinimas *</label>
+                        <input id="product-name" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                               placeholder="Produkto pavadinimas">
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">SKU kodas *</label>
+                            <input id="product-sku" type="text" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="PRD-001">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kategorija</label>
+                            <select id="product-category" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                <option value="office">Biuro reikmenys</option>
+                                <option value="tech">Technika</option>
+                                <option value="furniture">Baldai</option>
+                                <option value="supplies">Ūkinės prekės</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Vienetas</label>
+                            <select id="product-unit" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                <option value="vnt">vnt.</option>
+                                <option value="kg">kg</option>
+                                <option value="l">l</option>
+                                <option value="m">m</option>
+                                <option value="m2">m²</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Aprašymas</label>
+                        <textarea id="product-description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                                  placeholder="Detalus produkto aprašymas"></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Bazinė kaina (€) *</label>
+                            <input id="product-price" type="number" step="0.01" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" 
+                                   placeholder="0.00">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">PVM tarifas (%)</label>
+                            <select id="product-vat" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+                                <option value="21">21% (standartinis)</option>
+                                <option value="9">9% (sumažintas)</option>
+                                <option value="5">5% (sumažintas)</option>
+                                <option value="0">0% (PVM neapmokestinama)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-4 flex space-x-2">
+                        <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                            <i class="fas fa-save mr-2"></i>Išsaugoti
+                        </button>
+                        <button type="button" onclick="showProducts()" class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700">
+                            Atšaukti
+                        </button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    function saveSupplier(event) {
+        event.preventDefault();
+        
+        const supplier = {
+            id: Date.now(),
+            name: document.getElementById('supplier-name').value,
+            email: document.getElementById('supplier-email').value,
+            phone: document.getElementById('supplier-phone').value,
+            address: document.getElementById('supplier-address').value,
+            vat_code: document.getElementById('supplier-vat').value,
+            category: document.getElementById('supplier-category').value,
+            created_at: new Date().toISOString()
+        };
+        
+        // Save to localStorage
+        let suppliers = JSON.parse(localStorage.getItem('procurement_suppliers') || '[]');
+        suppliers.push(supplier);
+        localStorage.setItem('procurement_suppliers', JSON.stringify(suppliers));
+        
+        // Log audit event
+        logAuditEvent('create_supplier', `Sukurtas tiekėjas: ${supplier.name}`);
+        
+        // Show success message
+        alert('Tiekėjas sėkmingai išsaugotas!');
+        
+        // Return to suppliers list
+        showSuppliers();
+    }
+
+    function saveProduct(event) {
+        event.preventDefault();
+        
+        const product = {
+            id: Date.now(),
+            name: document.getElementById('product-name').value,
+            sku: document.getElementById('product-sku').value,
+            category: document.getElementById('product-category').value,
+            unit: document.getElementById('product-unit').value,
+            description: document.getElementById('product-description').value,
+            price: parseFloat(document.getElementById('product-price').value),
+            vat_rate: parseInt(document.getElementById('product-vat').value),
+            created_at: new Date().toISOString()
+        };
+        
+        // Save to localStorage
+        let products = JSON.parse(localStorage.getItem('procurement_products') || '[]');
+        products.push(product);
+        localStorage.setItem('procurement_products', JSON.stringify(products));
+        
+        // Log audit event
+        logAuditEvent('create_product', `Sukurtas produktas: ${product.name} (${product.sku})`);
+        
+        // Show success message
+        alert('Produktas sėkmingai išsaugotas!');
+        
+        // Return to products list
+        showProducts();
+    }
+
+    // Fix reports generation function
+    function showReports() {
+        const html = `
+            <div class="bg-white border rounded-lg p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-semibold">Ataskaitos</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="border rounded-lg p-4">
+                        <h4 class="font-medium mb-3">Užsakymų ataskaita</h4>
+                        <p class="text-sm text-gray-600 mb-4">Visų užsakymų suvestinė pagal laikotarpį</p>
+                        <button onclick="generateReport('orders')" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+                            <i class="fas fa-chart-bar mr-2"></i>Generuoti
+                        </button>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4">
+                        <h4 class="font-medium mb-3">Finansų ataskaita</h4>
+                        <p class="text-sm text-gray-600 mb-4">Išlaidų ir biudžeto analizė</p>
+                        <button onclick="generateReport('finance')" class="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">
+                            <i class="fas fa-euro-sign mr-2"></i>Generuoti
+                        </button>
+                    </div>
+                    
+                    <div class="border rounded-lg p-4">
+                        <h4 class="font-medium mb-3">Tiekėjų ataskaita</h4>
+                        <p class="text-sm text-gray-600 mb-4">Tiekėjų veiklos suvestinė</p>
+                        <button onclick="generateReport('suppliers')" class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700">
+                            <i class="fas fa-building mr-2"></i>Generuoti
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t">
+                    <h4 class="font-medium mb-4">Eksportavimo parinktys</h4>
+                    <div class="flex space-x-4">
+                        <button onclick="exportToPDF()" class="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700">
+                            <i class="fas fa-file-pdf mr-2"></i>Eksportuoti PDF
+                        </button>
+                        <button onclick="exportToExcel()" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
+                            <i class="fas fa-file-excel mr-2"></i>Eksportuoti Excel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.getElementById('content-area').innerHTML = html;
+    }
+
+    function exportToPDF() {
+        // Simple PDF export implementation
+        const orders = JSON.parse(localStorage.getItem('procurement_orders') || '[]');
+        
+        let html = `
+            <html>
+            <head>
+                <title>Užsakymų ataskaita</title>
+                <style>
+                    body { font-family: Arial, sans-serif; margin: 20px; }
+                    table { width: 100%; border-collapse: collapse; }
+                    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                    th { background-color: #f2f2f2; }
+                    h1 { color: #333; }
+                </style>
+            </head>
+            <body>
+                <h1>Užsakymų ataskaita</h1>
+                <p>Generuota: ${new Date().toLocaleString('lt-LT')}</p>
+                <table>
+                    <tr>
+                        <th>Nr.</th>
+                        <th>Pavadinimas</th>
+                        <th>Statusas</th>
+                        <th>Suma</th>
+                        <th>Data</th>
+                    </tr>
+        `;
+        
+        orders.forEach((order, index) => {
+            html += `
+                <tr>
+                    <td>${order.order_number || (index + 1)}</td>
+                    <td>${order.title}</td>
+                    <td>${order.status}</td>
+                    <td>${(order.totals?.total_amount || 0).toFixed(2)} €</td>
+                    <td>${new Date(order.created_at).toLocaleDateString('lt-LT')}</td>
+                </tr>
+            `;
+        });
+        
+        html += `
+                </table>
+            </body>
+            </html>
+        `;
+        
+        // Open in new window for printing/saving as PDF
+        const newWindow = window.open('', '_blank');
+        newWindow.document.write(html);
+        newWindow.document.close();
+        
+        alert('PDF ataskaita atidaryta naujame lange. Galite ją išspausdinti arba išsaugoti.');
+    }
+
+    function exportToExcel() {
+        // Simple Excel-compatible CSV export
+        const orders = JSON.parse(localStorage.getItem('procurement_orders') || '[]');
+        
+        let csv = 'Nr.,Pavadinimas,Statusas,Suma,Data\\n';
+        
+        orders.forEach((order, index) => {
+            csv += `${order.order_number || (index + 1)},"${order.title}","${order.status}","${(order.totals?.total_amount || 0).toFixed(2)} €","${new Date(order.created_at).toLocaleDateString('lt-LT')}"\\n`;
+        });
+        
+        // Create download link
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        
+        link.setAttribute('href', url);
+        link.setAttribute('download', `uzsakymai_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        alert('Excel ataskaita sėkmingai atsisiųsta!');
+    }
     </script>
 </body>
 </html>

@@ -27,16 +27,22 @@
     "git:status": "git status",
     "git:log": "git log --oneline"
   },
-  "dependencies": {},
+  "dependencies": {
+    "netlify-cli": "^23.5.1"
+  },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250705.0",
     "@hono/vite-cloudflare-pages": "^0.4.2",
-
+    "typescript": "^5.0.0",
     "vite": "^5.0.0",
-    "wrangler": "^3.78.0",
-    "typescript": "^5.0.0"
+    "wrangler": "^3.78.0"
   },
-  "keywords": ["hono", "cloudflare-pages", "orders", "management"],
+  "keywords": [
+    "hono",
+    "cloudflare-pages",
+    "orders",
+    "management"
+  ],
   "author": "",
   "license": "MIT"
 }

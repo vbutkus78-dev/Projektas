@@ -126,8 +126,38 @@
 4. Eksportuokite PDF arba Excel formatu
 
 ## Diegimo informacija
-- **Platforma**: Netlify statinis hosting
+- **Platforma**: Netlify statinis hosting  
 - **Statusas**: ✅ Aktyvus ir veikiantis
+- **Test URL**: https://8080-i1qoik2ucaytcjarkeljq-6532622b.e2b.dev
+- **Diegimo paketas**: `netlify-updated-deployment.zip` (25KB) - paruoštas naujam diegimui
+
+### 🚀 Netlify atnaujinimo instrukcijos
+
+#### Metodas 1: Drag & Drop (rekomenduojamas)
+1. Atsisiųskite `netlify-updated-deployment.zip` failą
+2. Eikite į savo Netlify Dashboard
+3. Atidarykite savo svetainės projektą
+4. Eikite į "Deploys" skiltį
+5. Nuvilkite ZIP failą į diegimo sritį arba spustelėkite "Browse to upload"
+6. Netlify automatiškai išskleistų ir įdiegtų atnaujinimą
+
+#### Metodas 2: Netlify CLI
+```bash
+# Prisijunkite prie Netlify
+netlify login
+
+# Įdiekite atnaujinimą
+netlify deploy --prod --dir=netlify
+```
+
+#### ✅ Pataisytos problemos šiame atnaujinime
+- ✅ "Naujas užsakymas" mygtukas dabar veikia
+- ✅ "Naujas tiekėjas" mygtukas dabar veikia  
+- ✅ Produktų valdymo veiksmai veikia
+- ✅ Ataskaitų generavimas ir eksportavimas veikia
+- ✅ Filtravimo sistema veikia visose skiltyse
+- ✅ Išvalytos dubliuotos JavaScript funkcijos
+- ✅ VAT skaičiavimai ir automatiniai totals veikia teisingai
 - **Technologijų stack**: 
   - Frontend: Vanilla JavaScript + TailwindCSS
   - Duomenų saugojimas: Browser localStorage
